@@ -28,20 +28,26 @@ const aiInsights: AiInsight[] = [
   {
     id: "ins_1001",
     tenantId: TENANT_ID,
-    headline: "Re-authentication risk on Kotak Securities",
-    body: "The Kotak Securities feed has stalled and needs re-authentication before sync can resume. Holdings for this account may be stale until the connection is restored.",
+    headline: "Re-authentication risk on Angel One",
+    body: "The Angel One feed for the Desai Family HUF has stalled and needs re-authentication before sync can resume. Holdings for this account may be stale until the connection is restored.",
   },
   {
     id: "ins_1002",
     tenantId: TENANT_ID,
     headline: "Dividend not booked in Tally",
-    body: "A dividend credit for Crown Global Ventures is missing from the books of account. Recording it will realign consolidated income with the ledger for FY 2025-26.",
+    body: "A dividend credit for CrownGlobe Ventures Pvt Ltd is missing from the books of account. Recording it will realign consolidated income with the ledger for FY 2025-26.",
   },
   {
     id: "ins_1003",
     tenantId: TENANT_ID,
+    headline: "SMC SIP not yet reflected",
+    body: "A monthly SIP transacted through SMC Global Securities has not posted to the consolidated view, leaving the mutual fund allocation understated until the transaction reconciles.",
+  },
+  {
+    id: "ins_1004",
+    tenantId: TENANT_ID,
     headline: "Two high-severity items concentrate the risk",
-    body: "High-severity exceptions on ICICI Direct and Kotak Securities account for the bulk of open risk. Clearing these two first would resolve most of the outstanding impact.",
+    body: "High-severity exceptions on ICICI Direct for Vijay Desai and Angel One for the Desai Family HUF account for the bulk of open risk. Clearing these two first would resolve most of the outstanding impact.",
   },
 ];
 

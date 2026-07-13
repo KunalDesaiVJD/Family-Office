@@ -12,20 +12,10 @@ import {
 } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import { formatNumber, formatDate } from "@/lib/format";
-import { TENANT_ID } from "@/data/mockDashboard";
+import { vaultDocuments, TOTAL_DOCUMENTS } from "@/data/mockDocuments";
+import type { VaultDocument } from "@/types/document";
 
 export const metadata: Metadata = { title: "Document Vault" };
-
-interface VaultDocument {
-  id: string;
-  tenantId: string;
-  name: string;
-  category: "statement" | "contract_note" | "policy" | "legal" | "tax" | "kyc";
-  owner: string;
-  sizeKb: number;
-  uploadedAt: string;
-  status: "verified" | "pending" | "expiring";
-}
 
 const CATEGORY_LABELS: Record<VaultDocument["category"], string> = {
   statement: "Statement",
@@ -48,88 +38,9 @@ const STATUS_LABELS: Record<VaultDocument["status"], string> = {
   expiring: "Expiring",
 };
 
-const documents: VaultDocument[] = [
-  {
-    id: "doc_5001",
-    tenantId: TENANT_ID,
-    name: "Zerodha Holding Statement Jun-2026",
-    category: "statement",
-    owner: "Rajan Mehta",
-    sizeKb: 842,
-    uploadedAt: "2026-07-02",
-    status: "verified",
-  },
-  {
-    id: "doc_5002",
-    tenantId: TENANT_ID,
-    name: "HDFC Life T-889001 Policy",
-    category: "policy",
-    owner: "Anita Mehta",
-    sizeKb: 1_240,
-    uploadedAt: "2026-06-18",
-    status: "expiring",
-  },
-  {
-    id: "doc_5003",
-    tenantId: TENANT_ID,
-    name: "Crown Global Ventures MOA",
-    category: "legal",
-    owner: "Crown Global Ventures",
-    sizeKb: 3_680,
-    uploadedAt: "2026-05-27",
-    status: "verified",
-  },
-  {
-    id: "doc_5004",
-    tenantId: TENANT_ID,
-    name: "PAN Card - Rajan Mehta",
-    category: "kyc",
-    owner: "Rajan Mehta",
-    sizeKb: 214,
-    uploadedAt: "2026-04-11",
-    status: "verified",
-  },
-  {
-    id: "doc_5005",
-    tenantId: TENANT_ID,
-    name: "ICICI Direct Contract Note 12-Jun",
-    category: "contract_note",
-    owner: "Vikram Mehta",
-    sizeKb: 356,
-    uploadedAt: "2026-06-12",
-    status: "pending",
-  },
-  {
-    id: "doc_5006",
-    tenantId: TENANT_ID,
-    name: "Capital Gains Statement AY 2026-27",
-    category: "tax",
-    owner: "Rajan Mehta",
-    sizeKb: 1_058,
-    uploadedAt: "2026-07-06",
-    status: "pending",
-  },
-  {
-    id: "doc_5007",
-    tenantId: TENANT_ID,
-    name: "Kotak Securities Statement Jun-2026",
-    category: "statement",
-    owner: "Anita Mehta",
-    sizeKb: 690,
-    uploadedAt: "2026-07-03",
-    status: "verified",
-  },
-  {
-    id: "doc_5008",
-    tenantId: TENANT_ID,
-    name: "Family Trust Deed - Amendment",
-    category: "legal",
-    owner: "CrownGlobe Family Trust",
-    sizeKb: 4_120,
-    uploadedAt: "2026-03-22",
-    status: "verified",
-  },
-];
+const documents = [...vaultDocuments].sort((a, b) =>
+  b.uploadedAt.localeCompare(a.uploadedAt),
+);
 
 const categoryCount = new Set(documents.map((d) => d.category)).size;
 const verifiedCount = documents.filter((d) => d.status === "verified").length;
@@ -141,12 +52,16 @@ const columns: DataTableColumn<VaultDocument>[] = [
   {
     key: "name",
     header: "Document",
-    render: (_v, row) => <span className="font-medium text-ink">{row.name}</span>,
+    render: (_v, row) => (
+      <span className="font-medium text-ink">{row.name}</span>
+    ),
   },
   {
     key: "category",
     header: "Category",
-    render: (_v, row) => <Badge tone="neutral">{CATEGORY_LABELS[row.category]}</Badge>,
+    render: (_v, row) => (
+      <Badge tone="neutral">{CATEGORY_LABELS[row.category]}</Badge>
+    ),
   },
   {
     key: "owner",
@@ -158,14 +73,18 @@ const columns: DataTableColumn<VaultDocument>[] = [
     header: "Size",
     align: "right",
     render: (_v, row) => (
-      <span className="tabular-nums text-muted">{formatNumber(row.sizeKb)} KB</span>
+      <span className="tabular-nums text-muted">
+        {formatNumber(row.sizeKb)} KB
+      </span>
     ),
   },
   {
     key: "uploadedAt",
     header: "Uploaded",
     render: (_v, row) => (
-      <span className="tabular-nums text-muted">{formatDate(row.uploadedAt)}</span>
+      <span className="tabular-nums text-muted">
+        {formatDate(row.uploadedAt)}
+      </span>
     ),
   },
   {
@@ -187,7 +106,11 @@ export default function DocumentVaultPage() {
         title="Document Vault"
         description="Secure repository for statements, contract notes, policy and legal documents across the family office."
         actions={
-          <Button variant="outline" size="md" leftIcon={<Icon name="download" size={16} />}>
+          <Button
+            variant="outline"
+            size="md"
+            leftIcon={<Icon name="download" size={16} />}
+          >
             Export
           </Button>
         }
@@ -196,8 +119,8 @@ export default function DocumentVaultPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <MetricCard
           label="Total Documents"
-          value="128"
-          sublabel="8 shown"
+          value={formatNumber(TOTAL_DOCUMENTS)}
+          sublabel={`${documents.length} shown`}
           icon={<Icon name="documents" size={18} />}
         />
         <MetricCard
@@ -217,11 +140,7 @@ export default function DocumentVaultPage() {
           sublabel="Pending or expiring"
           tone="warning"
         />
-        <MetricCard
-          label="Storage Used"
-          value="2.4 GB"
-          sublabel="of 50 GB"
-        />
+        <MetricCard label="Storage Used" value="2.4 GB" sublabel="of 50 GB" />
       </div>
 
       <Card
@@ -235,14 +154,22 @@ export default function DocumentVaultPage() {
       <Card
         title="Upload & Encryption"
         description="Secure ingestion pipeline"
-        action={<Badge tone="info" dot>Beta</Badge>}
+        action={
+          <Badge tone="info" dot>
+            Beta
+          </Badge>
+        }
       >
         <EmptyState
           icon={<Icon name="documents" size={18} />}
           title="Drag-and-drop upload with encryption at rest"
           description="Drop statements, contract notes and legal files into the vault to have them classified automatically, encrypted at rest with per-tenant keys and reconciled against family member and entity records. Automated ingestion and retention policies are rolling out in this beta module."
           action={
-            <Button variant="secondary" size="sm" leftIcon={<Icon name="shield" size={16} />}>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Icon name="shield" size={16} />}
+            >
               Request access
             </Button>
           }

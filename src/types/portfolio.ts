@@ -37,6 +37,8 @@ export interface MutualFundFolio {
   invested: number;
   currentValue: number;
   xirr: number;
+  /** Distribution platform / ARN holder the folio is transacted through. */
+  distributor: string;
 }
 
 export type BankAccountType = "savings" | "current" | "fd" | "nre" | "nro";

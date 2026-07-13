@@ -11,7 +11,7 @@ import {
 } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import { formatCompactINR, formatDate } from "@/lib/format";
-import { insurancePolicies } from "@/data/mockInsurance";
+import { insurancePolicies, premiumsDueSoon } from "@/data/mockInsurance";
 import type { InsurancePolicy } from "@/types/insurance";
 
 export const metadata: Metadata = { title: "Insurance Vault" };
@@ -46,6 +46,7 @@ const totalAnnualPremium = insurancePolicies.reduce((sum, p) => sum + p.annualPr
 const graceLapsedCount = insurancePolicies.filter(
   (p) => p.status === "grace" || p.status === "lapsed",
 ).length;
+const premiumsDueCount = premiumsDueSoon.length;
 
 const columns: DataTableColumn<InsurancePolicy>[] = [
   {
@@ -138,7 +139,7 @@ export default function InsuranceVaultPage() {
         />
         <MetricCard
           label="Premiums Due"
-          value="4"
+          value={String(premiumsDueCount)}
           sublabel="Next 45 days"
           tone="warning"
         />
@@ -171,9 +172,9 @@ export default function InsuranceVaultPage() {
                 Upcoming renewals and nominee checks are monitored continuously
               </p>
               <p className="text-sm text-muted">
-                Four premiums fall due within the next 45 days. The vault flags policies in grace,
-                schedules renewal reminders and reconciles nominee records against family member
-                profiles so coverage never lapses unnoticed.
+                {premiumsDueCount} premiums fall due within the next 45 days. The vault flags
+                policies in grace, schedules renewal reminders and reconciles nominee records
+                against family member profiles so coverage never lapses unnoticed.
               </p>
             </div>
           </div>

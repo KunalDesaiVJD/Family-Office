@@ -32,10 +32,10 @@ interface TaxPosition {
 
 const taxPositions: TaxPosition[] = [
   {
-    id: "tax_rajan",
+    id: "tax_vijay",
     tenantId: TENANT_ID,
-    entity: "Rajan Mehta",
-    pan: "ABCPM1234R",
+    entity: "Vijay Desai",
+    pan: "ABCPV5678J",
     stcg: 18_400_000,
     ltcg: 62_500_000,
     estLiability: 21_800_000,
@@ -44,10 +44,10 @@ const taxPositions: TaxPosition[] = [
     dueDate: "2026-07-31",
   },
   {
-    id: "tax_anjali",
+    id: "tax_kunal",
     tenantId: TENANT_ID,
-    entity: "Anjali Mehta",
-    pan: "ABCPM5678A",
+    entity: "Kunal Desai",
+    pan: "ABCPK1234D",
     stcg: 9_600_000,
     ltcg: 34_200_000,
     estLiability: 11_300_000,
@@ -58,7 +58,7 @@ const taxPositions: TaxPosition[] = [
   {
     id: "tax_ventures",
     tenantId: TENANT_ID,
-    entity: "Crown Global Ventures Pvt Ltd",
+    entity: "CrownGlobe Ventures Pvt Ltd",
     pan: "AABCC1234D",
     stcg: 42_100_000,
     ltcg: 0,
@@ -70,8 +70,8 @@ const taxPositions: TaxPosition[] = [
   {
     id: "tax_huf",
     tenantId: TENANT_ID,
-    entity: "Mehta Family HUF",
-    pan: "AACHM9012F",
+    entity: "Desai Family HUF",
+    pan: "AAAHD7890N",
     stcg: 6_200_000,
     ltcg: 15_800_000,
     estLiability: 6_900_000,
@@ -82,8 +82,8 @@ const taxPositions: TaxPosition[] = [
   {
     id: "tax_trust",
     tenantId: TENANT_ID,
-    entity: "Mehta Family Private Trust",
-    pan: "AABTM3456K",
+    entity: "Desai Family Private Trust",
+    pan: "AAATD3456N",
     stcg: 3_500_000,
     ltcg: 28_400_000,
     estLiability: 9_400_000,

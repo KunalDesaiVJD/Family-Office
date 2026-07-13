@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-
 import {
   Badge,
   Button,
@@ -7,15 +6,19 @@ import {
   DataTable,
   MetricCard,
   PageHeader,
-  type BadgeTone,
   type DataTableColumn,
 } from "@/components/ui";
 import { Icon } from "@/components/icons";
-import { TENANT_ID, recentExceptions } from "@/data/mockDashboard";
-import type {
-  ReconciliationException,
-  TallyCompany,
-} from "@/types/tally";
+import { tallyCompanies, reconciliationExceptions } from "@/data/mockTally";
+import type { ReconciliationException, TallyCompany } from "@/types/tally";
+import {
+  syncStateTone,
+  syncStateLabel,
+  severityTone,
+  severityLabel,
+  exceptionStatusTone,
+  exceptionStatusLabel,
+} from "@/lib/status";
 import {
   formatCompactINR,
   formatDateTime,
@@ -24,84 +27,6 @@ import {
 } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Tally Sync" };
-
-const tallyCompanies: TallyCompany[] = [
-  {
-    id: "tly_ven",
-    tenantId: TENANT_ID,
-    entityId: "ent_crown_ventures",
-    companyName: "Crown Global Ventures Pvt Ltd",
-    gstin: "27AABCC1234D1Z5",
-    financialYear: "2025-26",
-    lastSyncedAt: "2026-07-13T06:15:00+05:30",
-    syncState: "synced",
-    ledgerCount: 842,
-    closingBalance: 486_200_000,
-  },
-  {
-    id: "tly_adv",
-    tenantId: TENANT_ID,
-    entityId: "ent_crownglobe_advisory",
-    companyName: "CrownGlobe Advisory LLP",
-    gstin: "27AABFC5678E1Z2",
-    financialYear: "2025-26",
-    lastSyncedAt: "2026-07-12T21:40:00+05:30",
-    syncState: "pending",
-    ledgerCount: 517,
-    closingBalance: 128_600_000,
-  },
-  {
-    id: "tly_huf",
-    tenantId: TENANT_ID,
-    entityId: "ent_mehta_huf",
-    companyName: "Mehta Family HUF",
-    gstin: "27AACHM9012F1Z9",
-    financialYear: "2025-26",
-    lastSyncedAt: "2026-07-11T18:05:00+05:30",
-    syncState: "error",
-    ledgerCount: 264,
-    closingBalance: 74_300_000,
-  },
-];
-
-const syncStateTone: Record<TallyCompany["syncState"], BadgeTone> = {
-  synced: "success",
-  pending: "warning",
-  error: "danger",
-  never: "neutral",
-};
-
-const syncStateLabel: Record<TallyCompany["syncState"], string> = {
-  synced: "Synced",
-  pending: "Pending",
-  error: "Error",
-  never: "Never",
-};
-
-const severityTone: Record<ReconciliationException["severity"], BadgeTone> = {
-  high: "danger",
-  medium: "warning",
-  low: "neutral",
-};
-
-const severityLabel: Record<ReconciliationException["severity"], string> = {
-  high: "High",
-  medium: "Medium",
-  low: "Low",
-};
-
-const exceptionStatusTone: Record<ReconciliationException["status"], BadgeTone> =
-  {
-    open: "warning",
-    in_review: "info",
-    resolved: "success",
-  };
-
-const exceptionStatusLabel: Record<ReconciliationException["status"], string> = {
-  open: "Open",
-  in_review: "In Review",
-  resolved: "Resolved",
-};
 
 const companyColumns: DataTableColumn<TallyCompany>[] = [
   {
@@ -121,7 +46,9 @@ const companyColumns: DataTableColumn<TallyCompany>[] = [
   {
     key: "financialYear",
     header: "FY",
-    render: (_v, row) => <span className="text-muted">{row.financialYear}</span>,
+    render: (_v, row) => (
+      <span className="text-muted">{row.financialYear}</span>
+    ),
   },
   {
     key: "ledgerCount",
@@ -207,17 +134,14 @@ const exceptionColumns: DataTableColumn<ReconciliationException>[] = [
 export default function TallySyncPage() {
   const companyCount = tallyCompanies.length;
   const syncedCount = tallyCompanies.filter(
-    (company) => company.syncState === "synced"
+    (c) => c.syncState === "synced",
   ).length;
   const notSyncedCount = tallyCompanies.filter(
-    (company) => company.syncState !== "synced"
+    (c) => c.syncState !== "synced",
   ).length;
-  const totalLedgers = tallyCompanies.reduce(
-    (sum, company) => sum + company.ledgerCount,
-    0
-  );
-  const openExceptions = recentExceptions.filter(
-    (exception) => exception.status !== "resolved"
+  const totalLedgers = tallyCompanies.reduce((s, c) => s + c.ledgerCount, 0);
+  const openExceptions = reconciliationExceptions.filter(
+    (e) => e.status !== "resolved",
   ).length;
 
   return (
@@ -288,7 +212,7 @@ export default function TallySyncPage() {
       >
         <DataTable
           columns={exceptionColumns}
-          rows={recentExceptions}
+          rows={reconciliationExceptions}
           emptyMessage="No reconciliation exceptions outstanding."
         />
       </Card>

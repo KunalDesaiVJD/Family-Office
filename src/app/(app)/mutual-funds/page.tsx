@@ -39,6 +39,11 @@ const columns: DataTableColumn<MutualFundFolio>[] = [
     render: (_v, row) => <span className="text-muted">{row.amc}</span>,
   },
   {
+    key: "distributor",
+    header: "Platform",
+    render: () => <Badge tone="brand">SMC</Badge>,
+  },
+  {
     key: "scheme",
     header: "Scheme",
     render: (_v, row) => (
@@ -123,7 +128,7 @@ export default function MutualFundsPage() {
       <PageHeader
         eyebrow="CrownGlobe Family · Wealth"
         title="Mutual Funds"
-        description="Folio-level mutual fund holdings across AMCs — invested capital, current value and XIRR for every family member."
+        description="Folio-level mutual fund holdings across AMCs, transacted through SMC Global Securities — invested capital, current value and XIRR for every family member."
         actions={
           <Button
             variant="outline"
@@ -139,7 +144,7 @@ export default function MutualFundsPage() {
         <MetricCard
           label="Folios"
           value={formatNumber(folioCount)}
-          sublabel="Active fund folios"
+          sublabel="Folios via SMC Global"
           icon={<Icon name="funds" size={18} />}
         />
         <MetricCard
@@ -193,7 +198,7 @@ export default function MutualFundsPage() {
               <div className="flex flex-1 items-center gap-3">
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
                   <div
-                    className="h-full rounded-full bg-brand"
+                    className="h-full rounded-full bg-brand-blue"
                     style={{ width: `${row.percent}%` }}
                   />
                 </div>

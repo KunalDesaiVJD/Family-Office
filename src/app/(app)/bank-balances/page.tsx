@@ -8,85 +8,16 @@ import {
   EmptyState,
   DataTable,
   type DataTableColumn,
-  type BadgeTone,
 } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import type { BankAccount, BankAccountType } from "@/types/portfolio";
-import { TENANT_ID } from "@/data/mockDashboard";
-import {
-  formatCompactINR,
-  formatINR,
-  formatDateTime,
-} from "@/lib/format";
+import { bankAccounts } from "@/data/mockBank";
+import { connectionTone, connectionLabel } from "@/lib/status";
+import { formatCompactINR, formatINR, formatDateTime } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Bank Balances" };
 
-/* ---------- Page-local mock data (SaaS-ready: tenant-scoped) ---------- */
-
-const bankAccounts: BankAccount[] = [
-  {
-    id: "bank_01",
-    tenantId: TENANT_ID,
-    entityId: "ent_pvt",
-    holderName: "Crown Global Ventures Pvt Ltd",
-    bank: "HDFC Bank",
-    accountType: "current",
-    maskedNumber: "XXXX4821",
-    balance: 41_800_000,
-    connectionStatus: "connected",
-    lastSyncedAt: "2026-07-13T08:42:00+05:30",
-  },
-  {
-    id: "bank_02",
-    tenantId: TENANT_ID,
-    entityId: "ent_huf",
-    holderName: "Rathore Family HUF",
-    bank: "ICICI Bank",
-    accountType: "savings",
-    maskedNumber: "XXXX7364",
-    balance: 18_600_000,
-    connectionStatus: "connected",
-    lastSyncedAt: "2026-07-13T08:15:00+05:30",
-  },
-  {
-    id: "bank_03",
-    tenantId: TENANT_ID,
-    entityId: "ent_trust",
-    holderName: "CrownGlobe Legacy Trust",
-    bank: "State Bank of India",
-    accountType: "fd",
-    maskedNumber: "XXXX9052",
-    balance: 38_400_000,
-    connectionStatus: "syncing",
-    lastSyncedAt: "2026-07-13T07:58:00+05:30",
-  },
-  {
-    id: "bank_04",
-    tenantId: TENANT_ID,
-    entityId: "ent_llp",
-    holderName: "Crown Advisory LLP",
-    bank: "Kotak Mahindra",
-    accountType: "current",
-    maskedNumber: "XXXX2178",
-    balance: 15_200_000,
-    connectionStatus: "auth_required",
-    lastSyncedAt: "2026-07-11T19:04:00+05:30",
-  },
-  {
-    id: "bank_05",
-    tenantId: TENANT_ID,
-    entityId: "ent_pvt",
-    holderName: "Crown Global Ventures Pvt Ltd",
-    bank: "Axis Bank",
-    accountType: "nre",
-    maskedNumber: "XXXX6640",
-    balance: 12_000_000,
-    connectionStatus: "connected",
-    lastSyncedAt: "2026-07-13T06:30:00+05:30",
-  },
-];
-
-/* ---------- Aggregates (inline) ---------- */
+/* ---------- Aggregates ---------- */
 
 const linkedAccounts = bankAccounts.length;
 const totalBalance = bankAccounts.reduce((sum, a) => sum + a.balance, 0);
@@ -96,8 +27,7 @@ const connectedCount = bankAccounts.filter(
 const depositsFd = bankAccounts
   .filter((a) => a.accountType === "fd")
   .reduce((sum, a) => sum + a.balance, 0);
-
-/* ---------- Badge mappings ---------- */
+const entityCount = new Set(bankAccounts.map((a) => a.entityId)).size;
 
 const accountTypeLabel: Record<BankAccountType, string> = {
   savings: "SAVINGS",
@@ -105,22 +35,6 @@ const accountTypeLabel: Record<BankAccountType, string> = {
   fd: "FD",
   nre: "NRE",
   nro: "NRO",
-};
-
-const connectionTone: Record<string, BadgeTone> = {
-  connected: "success",
-  syncing: "info",
-  auth_required: "warning",
-  error: "danger",
-  disconnected: "neutral",
-};
-
-const connectionLabel: Record<string, string> = {
-  connected: "Connected",
-  syncing: "Syncing",
-  auth_required: "Auth required",
-  error: "Error",
-  disconnected: "Disconnected",
 };
 
 /* ---------- Table config ---------- */
@@ -183,8 +97,6 @@ const columns: DataTableColumn<BankAccount>[] = [
   },
 ];
 
-/* ---------- Page ---------- */
-
 export default function BankBalancesPage() {
   return (
     <div className="space-y-8">
@@ -203,17 +115,18 @@ export default function BankBalancesPage() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Linked Accounts"
           value={String(linkedAccounts)}
-          sublabel="Across 4 entities"
+          sublabel={`Across ${entityCount} entities`}
           icon={<Icon name="bank" size={18} />}
         />
         <MetricCard
           label="Total Balance"
           value={formatCompactINR(totalBalance)}
           sublabel={formatINR(totalBalance)}
+          tone="positive"
           icon={<Icon name="sparkle" size={18} />}
         />
         <MetricCard
