@@ -1,6 +1,11 @@
 // Formatting helpers. The platform is INR-first (Indian family office) but
 // currency is read from the tenant, keeping it SaaS-ready for other bases.
 
+// Pin the display timezone so dates/times render identically regardless of the
+// host's timezone — local dev (IST) vs. Vercel build/render servers (UTC).
+// SaaS-ready: this can later be sourced per-tenant.
+export const TIME_ZONE = "Asia/Kolkata";
+
 const INR = new Intl.NumberFormat("en-IN", {
   style: "currency",
   currency: "INR",
@@ -66,6 +71,7 @@ export function formatDate(iso: string): string {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    timeZone: TIME_ZONE,
   });
 }
 
@@ -79,5 +85,6 @@ export function formatDateTime(iso: string): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
+    timeZone: TIME_ZONE,
   });
 }

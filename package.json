@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Family Wealth OS - SaaS-ready private family wealth command centre (frontend foundation).",
+  "engines": {
+    "node": ">=18.18.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
