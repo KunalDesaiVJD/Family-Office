@@ -101,7 +101,7 @@ export default function BankBalancesPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Wealth"
+        eyebrow="V J Desai Family · Wealth"
         title="Bank Balances"
         description="Aggregated bank balances by entity across savings, current and deposit accounts, reconciled to the consolidated wealth view. Figures shown are illustrative mock data."
         actions={

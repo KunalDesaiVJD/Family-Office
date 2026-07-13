@@ -14,7 +14,7 @@ interface TopbarProps {
  */
 export function Topbar({
   onMenuClick,
-  tenantName = "CrownGlobe Family",
+  tenantName = "V J Desai Family",
   userName = "Family Principal",
   userInitials = "FP",
 }: TopbarProps) {
@@ -46,7 +46,7 @@ export function Topbar({
         {/* Tenant switcher (single tenant today; SaaS-ready) */}
         <button className="hidden items-center gap-2 rounded-lg border border-line bg-white px-3 py-1.5 text-sm text-ink hover:bg-slate-50 md:flex">
           <span className="flex h-5 w-5 items-center justify-center rounded bg-brand-navy text-[10px] font-semibold text-white">
-            CG
+            VJ
           </span>
           <span className="max-w-[9rem] truncate">{tenantName}</span>
           <Icon name="chevronDown" size={14} className="text-muted" />

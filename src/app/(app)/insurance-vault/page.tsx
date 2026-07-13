@@ -109,7 +109,7 @@ export default function InsuranceVaultPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Wealth"
+        eyebrow="V J Desai Family · Wealth"
         title="Insurance Vault"
         description="Consolidated policy register tracking sum assured, premium schedules and nominee coverage across the family."
         actions={

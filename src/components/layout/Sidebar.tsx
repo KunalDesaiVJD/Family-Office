@@ -90,11 +90,11 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
         <div className="border-t border-white/10 p-3">
           <div className="flex items-center gap-3 rounded-lg bg-white/5 px-3 py-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-navy text-xs font-semibold text-white ring-1 ring-white/10">
-              CG
+              VJ
             </span>
             <div className="min-w-0 flex-1 leading-tight">
               <p className="truncate text-sm font-medium text-white">
-                CrownGlobe Family
+                V J Desai Family
               </p>
               <p className="text-[11px] text-sidebar-text/50">
                 Family plan · 1 tenant

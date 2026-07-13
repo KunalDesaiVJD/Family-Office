@@ -126,7 +126,7 @@ export default function MutualFundsPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Wealth"
+        eyebrow="V J Desai Family · Wealth"
         title="Mutual Funds"
         description="Folio-level mutual fund holdings across AMCs, transacted through SMC Global Securities — invested capital, current value and XIRR for every family member."
         actions={

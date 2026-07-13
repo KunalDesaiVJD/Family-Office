@@ -21,7 +21,7 @@ const users: TenantUser[] = [
     id: "usr_001",
     tenantId: TENANT_ID,
     name: "Kunal Desai",
-    email: "kunal@crownglobe.com",
+    email: "kunal@vjdesai.com",
     role: "owner",
     status: "active",
     lastActiveAt: "2026-07-13T09:42:00+05:30",
@@ -30,7 +30,7 @@ const users: TenantUser[] = [
     id: "usr_002",
     tenantId: TENANT_ID,
     name: "Vijay Desai",
-    email: "vijay@crownglobe.com",
+    email: "vijay@vjdesai.com",
     role: "admin",
     status: "active",
     lastActiveAt: "2026-07-13T08:15:00+05:30",
@@ -39,7 +39,7 @@ const users: TenantUser[] = [
     id: "usr_003",
     tenantId: TENANT_ID,
     name: "Neha Desai",
-    email: "neha@crownglobe.com",
+    email: "neha@vjdesai.com",
     role: "member",
     status: "active",
     lastActiveAt: "2026-07-12T18:30:00+05:30",
@@ -48,7 +48,7 @@ const users: TenantUser[] = [
     id: "usr_004",
     tenantId: TENANT_ID,
     name: "Lata Desai",
-    email: "lata@crownglobe.com",
+    email: "lata@vjdesai.com",
     role: "viewer",
     status: "invited",
     lastActiveAt: "2026-07-10T11:05:00+05:30",
@@ -57,7 +57,7 @@ const users: TenantUser[] = [
     id: "usr_005",
     tenantId: TENANT_ID,
     name: "Family Office Advisor",
-    email: "advisor@crownglobe.com",
+    email: "advisor@vjdesai.com",
     role: "advisor",
     status: "active",
     lastActiveAt: "2026-06-28T16:20:00+05:30",
@@ -182,7 +182,7 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · System"
+        eyebrow="V J Desai Family · System"
         title="Admin Settings"
         description="Tenant profile, users and roles, and feature flags for the family office control plane."
         actions={

@@ -147,7 +147,7 @@ export default function TallySyncPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Operations"
+        eyebrow="V J Desai Family · Operations"
         title="Tally Sync"
         description="Reconcile Tally books of account against consolidated holdings across the family's operating entities."
         actions={

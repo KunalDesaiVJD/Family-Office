@@ -91,7 +91,7 @@ Every future data model must support:
 - future billing plans
 - connector-based integrations
 
-Even though the first tenant is only "CrownGlobe Family", do not build the app as a hardcoded single-family tool.
+Even though the first tenant is only "V J Desai Family", do not build the app as a hardcoded single-family tool.
 
 Use these concepts:
 - Tenant

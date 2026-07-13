@@ -44,7 +44,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-10">
       <PageHeader
-        eyebrow="CrownGlobe Family · Command Centre"
+        eyebrow="V J Desai Family · Command Centre"
         title="Consolidated Dashboard"
         description="A single, bank-grade view of the family's wealth across brokers, funds, banks, Tally, insurance and operations. Figures shown are illustrative mock data."
         actions={

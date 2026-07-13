@@ -38,7 +38,7 @@ const approvalRequests: ApprovalRequest[] = [
     id: "apr_5001",
     tenantId: TENANT_ID,
     request: "Outbound remittance to custodian",
-    entity: "CrownGlobe Ventures Pvt Ltd",
+    entity: "V J Desai Ventures Pvt Ltd",
     requestedBy: "Kunal Desai",
     amount: 24_500_000,
     stage: "awaiting_checker",
@@ -48,7 +48,7 @@ const approvalRequests: ApprovalRequest[] = [
     id: "apr_5002",
     tenantId: TENANT_ID,
     request: "New broker account onboarding",
-    entity: "CrownGlobe Advisory LLP",
+    entity: "V J Desai Advisory LLP",
     requestedBy: "Neha Desai",
     amount: 0,
     stage: "pending",
@@ -68,7 +68,7 @@ const approvalRequests: ApprovalRequest[] = [
     id: "apr_5004",
     tenantId: TENANT_ID,
     request: "Mutual fund redemption request",
-    entity: "CrownGlobe Ventures Pvt Ltd",
+    entity: "V J Desai Ventures Pvt Ltd",
     requestedBy: "Kunal Desai",
     amount: 12_000_000,
     stage: "approved",
@@ -78,7 +78,7 @@ const approvalRequests: ApprovalRequest[] = [
     id: "apr_5005",
     tenantId: TENANT_ID,
     request: "Vendor payout above threshold",
-    entity: "CrownGlobe Advisory LLP",
+    entity: "V J Desai Advisory LLP",
     requestedBy: "Neha Desai",
     amount: 3_400_000,
     stage: "rejected",
@@ -92,7 +92,7 @@ const auditLog: AuditLogEntry[] = [
     tenantId: TENANT_ID,
     actor: "Kunal Desai",
     action: "Approval raised",
-    entity: "CrownGlobe Ventures Pvt Ltd",
+    entity: "V J Desai Ventures Pvt Ltd",
     detail: "Outbound remittance of ₹2.45 Cr submitted for checker review",
     timestamp: "2026-07-13T09:42:00+05:30",
     ipAddress: "103.21.58.14",
@@ -102,7 +102,7 @@ const auditLog: AuditLogEntry[] = [
     tenantId: TENANT_ID,
     actor: "Vijay Desai",
     action: "Approval approved",
-    entity: "CrownGlobe Ventures Pvt Ltd",
+    entity: "V J Desai Ventures Pvt Ltd",
     detail: "Mutual fund redemption approved under maker-checker control",
     timestamp: "2026-07-10T16:18:00+05:30",
     ipAddress: "103.21.58.09",
@@ -112,7 +112,7 @@ const auditLog: AuditLogEntry[] = [
     tenantId: TENANT_ID,
     actor: "Vijay Desai",
     action: "Approval rejected",
-    entity: "CrownGlobe Advisory LLP",
+    entity: "V J Desai Advisory LLP",
     detail: "Vendor payout rejected pending revised invoice documentation",
     timestamp: "2026-07-09T11:05:00+05:30",
     ipAddress: "49.36.112.87",
@@ -122,16 +122,16 @@ const auditLog: AuditLogEntry[] = [
     tenantId: TENANT_ID,
     actor: "System",
     action: "Sync completed",
-    entity: "Tally · CrownGlobe Ventures",
+    entity: "Tally · V J Desai Ventures",
     detail: "Ledger sync completed with 842 accounts reconciled",
     timestamp: "2026-07-13T06:15:00+05:30",
   },
   {
     id: "aud_9005",
     tenantId: TENANT_ID,
-    actor: "info@crownglobe.com",
+    actor: "info@vjdesai.com",
     action: "Role updated",
-    entity: "Tenant · CrownGlobe Family",
+    entity: "Tenant · V J Desai Family",
     detail: "Auditor role granted read-only access to workflow module",
     timestamp: "2026-07-08T14:30:00+05:30",
     ipAddress: "103.21.58.02",
@@ -245,7 +245,7 @@ export default function WorkflowCentrePage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Intelligence"
+        eyebrow="V J Desai Family · Intelligence"
         title="Workflow Centre"
         description="Route maker-checker approvals and maintain a tamper-evident audit trail across the tenant."
         actions={

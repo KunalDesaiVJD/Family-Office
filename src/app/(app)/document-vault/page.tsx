@@ -102,7 +102,7 @@ export default function DocumentVaultPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Operations"
+        eyebrow="V J Desai Family · Operations"
         title="Document Vault"
         description="Secure repository for statements, contract notes, policy and legal documents across the family office."
         actions={

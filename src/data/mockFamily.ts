@@ -5,7 +5,7 @@ export const legalEntities: LegalEntity[] = [
   {
     id: "ent_pvt",
     tenantId: TENANT_ID,
-    name: "CrownGlobe Ventures Pvt Ltd",
+    name: "V J Desai Ventures Pvt Ltd",
     type: "private_limited",
     pan: "AABCC1234D",
     jurisdiction: "Maharashtra, India",
@@ -22,7 +22,7 @@ export const legalEntities: LegalEntity[] = [
   {
     id: "ent_llp",
     tenantId: TENANT_ID,
-    name: "CrownGlobe Advisory LLP",
+    name: "V J Desai Advisory LLP",
     type: "llp",
     pan: "AABFC9012L",
     jurisdiction: "Maharashtra, India",

@@ -58,7 +58,7 @@ const taxPositions: TaxPosition[] = [
   {
     id: "tax_ventures",
     tenantId: TENANT_ID,
-    entity: "CrownGlobe Ventures Pvt Ltd",
+    entity: "V J Desai Ventures Pvt Ltd",
     pan: "AABCC1234D",
     stcg: 42_100_000,
     ltcg: 0,
@@ -202,7 +202,7 @@ export default function TaxCentrePage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Operations"
+        eyebrow="V J Desai Family · Operations"
         title="Tax Centre"
         description="Track capital gains, advance tax and filing status across every PAN and entity for AY 2026-27."
         actions={

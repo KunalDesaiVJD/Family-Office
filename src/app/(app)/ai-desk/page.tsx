@@ -35,7 +35,7 @@ const aiInsights: AiInsight[] = [
     id: "ins_1002",
     tenantId: TENANT_ID,
     headline: "Dividend not booked in Tally",
-    body: "A dividend credit for CrownGlobe Ventures Pvt Ltd is missing from the books of account. Recording it will realign consolidated income with the ledger for FY 2025-26.",
+    body: "A dividend credit for V J Desai Ventures Pvt Ltd is missing from the books of account. Recording it will realign consolidated income with the ledger for FY 2025-26.",
   },
   {
     id: "ins_1003",
@@ -140,7 +140,7 @@ export default function AiDeskPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Intelligence"
+        eyebrow="V J Desai Family · Intelligence"
         title="AI Desk"
         description="AI-authored exception summaries and narrative insights over the family's consolidated financial data."
         actions={
@@ -255,7 +255,7 @@ export default function AiDeskPage() {
           </div>
           <p className="text-xs text-muted">
             Conversational querying is in beta and will be enabled for the
-            CrownGlobe Family tenant in an upcoming release.
+            V J Desai Family tenant in an upcoming release.
           </p>
         </div>
       </Card>

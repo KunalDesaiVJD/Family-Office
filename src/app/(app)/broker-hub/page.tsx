@@ -185,7 +185,7 @@ export default function BrokerHubPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Wealth"
+        eyebrow="V J Desai Family · Wealth"
         title="Broker Hub"
         description="Consolidated demat and broker cash across the family's trading accounts."
         actions={

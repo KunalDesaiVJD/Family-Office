@@ -140,7 +140,7 @@ export default function FamilyPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="CrownGlobe Family · Wealth"
+        eyebrow="V J Desai Family · Wealth"
         title="Family Members"
         description="Governance register of family members, linked legal entities, PANs and consolidated net worth across the household."
         actions={

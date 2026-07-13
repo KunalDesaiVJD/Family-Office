@@ -50,7 +50,7 @@ src/
 
 ## SaaS-Ready by Design
 
-Although the first tenant is only **CrownGlobe Family**, every model carries a
+Although the first tenant is only **V J Desai Family**, every model carries a
 `tenantId` and the domain layer models Tenants, Legal Entities, Roles, Feature
 Flags, Audit Logs, Approvals, and connector-based integrations — so the same
 codebase can onboard additional families/offices without a rewrite.
