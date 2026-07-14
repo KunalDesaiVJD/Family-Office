@@ -1,0 +1,839 @@
+// Family Wealth OS — SaaS-ready PostgreSQL schema.
+//
+// Conventions:
+// - Every customer-owned table carries tenantId (+ a cascading Tenant relation).
+// - Every table has createdAt / updatedAt.
+// - Imported records carry externalSource + externalId.
+// - NO passwords, PINs, OTPs or TOTP secrets are stored anywhere.
+// - Broker credentials are NEVER stored — only an opaque credentialRef pointing
+//   at an external secrets vault.
+// - Reference tables (Role, Permission, Instrument, SubscriptionPlan) are
+//   platform-owned and therefore have no tenantId.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum PlanTier {
+  FAMILY
+  OFFICE
+  ENTERPRISE
+}
+
+enum TenantStatus {
+  ONBOARDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+}
+
+enum MemberStatus {
+  ACTIVE
+  ONBOARDING
+  INACTIVE
+}
+
+enum EntityType {
+  INDIVIDUAL
+  HUF
+  PRIVATE_LIMITED
+  LLP
+  PARTNERSHIP
+  TRUST
+}
+
+enum Relationship {
+  SELF
+  SPOUSE
+  SON
+  DAUGHTER
+  FATHER
+  MOTHER
+  HUF
+  ENTITY
+}
+
+enum PanHolderType {
+  INDIVIDUAL
+  ENTITY
+}
+
+enum ConnectionStatus {
+  CONNECTED
+  AUTH_REQUIRED
+  SYNCING
+  ERROR
+  DISCONNECTED
+}
+
+enum Depository {
+  NSDL
+  CDSL
+}
+
+enum FundCategory {
+  EQUITY
+  DEBT
+  HYBRID
+  LIQUID
+  INDEX
+  ELSS
+}
+
+enum PolicyType {
+  TERM
+  HEALTH
+  ENDOWMENT
+  ULIP
+  MOTOR
+  TRAVEL
+  GENERAL
+}
+
+enum PolicyStatus {
+  ACTIVE
+  LAPSED
+  GRACE
+  MATURED
+}
+
+enum SyncState {
+  SYNCED
+  PENDING
+  ERROR
+  NEVER
+}
+
+enum DocumentCategory {
+  STATEMENT
+  CONTRACT_NOTE
+  POLICY
+  LEGAL
+  TAX
+  KYC
+  OTHER
+}
+
+enum DocumentStatus {
+  VERIFIED
+  PENDING
+  EXPIRING
+  ARCHIVED
+}
+
+enum InstrumentType {
+  EQUITY
+  ETF
+  BOND
+  MUTUAL_FUND
+  DERIVATIVE
+  OTHER
+}
+
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+  STOP
+  STOP_LIMIT
+}
+
+enum OrderValidity {
+  DAY
+  IOC
+  GTC
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING_APPROVAL
+  PLACED
+  PARTIALLY_FILLED
+  EXECUTED
+  REJECTED
+  CANCELLED
+}
+
+enum VoucherType {
+  SALES
+  PURCHASE
+  PAYMENT
+  RECEIPT
+  JOURNAL
+  CONTRA
+  DEBIT_NOTE
+  CREDIT_NOTE
+}
+
+enum ReconciliationRunStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum ExceptionSeverity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ExceptionStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+}
+
+enum ApprovalType {
+  BROKER_LINK
+  REAUTHENTICATION
+  DOCUMENT_RELEASE
+  TRADE_ORDER
+  DATA_CORRECTION
+  USER_INVITE
+  OTHER
+}
+
+enum ApprovalStage {
+  PENDING
+  AWAITING_CHECKER
+  APPROVED
+  REJECTED
+}
+
+enum FeatureFlagScope {
+  TENANT
+  GLOBAL
+}
+
+enum BillingCycle {
+  MONTHLY
+  ANNUAL
+}
+
+// ---------------------------------------------------------------------------
+// Platform reference tables (no tenantId)
+// ---------------------------------------------------------------------------
+
+model SubscriptionPlan {
+  id                   String       @id @default(cuid())
+  tier                 PlanTier     @unique
+  name                 String
+  description          String
+  priceInr             Int          @default(0)
+  billingCycle         BillingCycle @default(ANNUAL)
+  features             String[]
+  maxUsers             Int          @default(5)
+  maxEntities          Int          @default(10)
+  maxConnectors        Int          @default(6)
+  auditRetentionMonths Int          @default(24)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+}
+
+model Permission {
+  id              String           @id @default(cuid())
+  key             String           @unique
+  resource        String
+  action          String
+  description     String?
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Role {
+  id              String           @id @default(cuid())
+  key             String           @unique
+  name            String
+  description     String?
+  isSystem        Boolean          @default(true)
+  users           User[]
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([roleId, permissionId])
+  @@index([permissionId])
+}
+
+model Instrument {
+  id             String            @id @default(cuid())
+  symbol         String            @unique
+  name           String
+  type           InstrumentType    @default(EQUITY)
+  exchange       String?
+  isin           String?
+  sector         String?
+  externalSource String?
+  externalId     String?
+  holdings       HoldingSnapshot[]
+  orders         Order[]
+  trades         Trade[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Tenant (root of the multi-tenant tree)
+// ---------------------------------------------------------------------------
+
+model Tenant {
+  id             String       @id @default(cuid())
+  name           String
+  slug           String       @unique
+  plan           PlanTier     @default(FAMILY)
+  planId         String
+  baseCurrency   String       @default("INR")
+  timeZone       String       @default("Asia/Kolkata")
+  primaryContact String
+  status         TenantStatus @default(ACTIVE)
+  onboardedAt    DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  users                    User[]
+  familyMembers            FamilyMember[]
+  legalEntities            LegalEntity[]
+  panProfiles              PanProfile[]
+  brokerAccounts           BrokerAccount[]
+  dematAccounts            DematAccount[]
+  mutualFundFolios         MutualFundFolio[]
+  insurancePolicies        InsurancePolicy[]
+  tallyCompanies           TallyCompany[]
+  documents                Document[]
+  holdingSnapshots         HoldingSnapshot[]
+  fundSnapshots            FundSnapshot[]
+  orders                   Order[]
+  trades                   Trade[]
+  ledgerEntries            LedgerEntry[]
+  reconciliationRuns       ReconciliationRun[]
+  reconciliationExceptions ReconciliationException[]
+  approvals                Approval[]
+  auditLogs                AuditLog[]
+  featureFlags             FeatureFlag[]
+
+  @@index([slug])
+}
+
+// ---------------------------------------------------------------------------
+// Identity & access
+// ---------------------------------------------------------------------------
+
+model User {
+  id             String     @id @default(cuid())
+  tenantId       String
+  tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String
+  email          String
+  roleId         String
+  role           Role       @relation(fields: [roleId], references: [id])
+  status         UserStatus @default(ACTIVE)
+  lastActiveAt   DateTime?
+  // Identity only — authentication is delegated to an external provider.
+  // No passwords, PINs, OTPs or TOTP secrets are ever stored here.
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@index([roleId])
+}
+
+// ---------------------------------------------------------------------------
+// Family / entities / PAN
+// ---------------------------------------------------------------------------
+
+model FamilyMember {
+  id             String       @id @default(cuid())
+  tenantId       String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String
+  relationship   Relationship
+  governanceRole String?
+  netWorth       Decimal      @default(0) @db.Decimal(18, 2)
+  status         MemberStatus @default(ACTIVE)
+  joinedAt       DateTime?
+  panProfileId   String?
+  panProfile     PanProfile?  @relation(fields: [panProfileId], references: [id])
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  brokerAccounts    BrokerAccount[]
+  mutualFundFolios  MutualFundFolio[]
+  insurancePolicies InsurancePolicy[]
+
+  @@index([tenantId])
+}
+
+model LegalEntity {
+  id             String      @id @default(cuid())
+  tenantId       String
+  tenant         Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String
+  type           EntityType
+  jurisdiction   String?
+  incorporatedOn DateTime?
+  isActive       Boolean     @default(true)
+  panProfileId   String?
+  panProfile     PanProfile? @relation(fields: [panProfileId], references: [id])
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  tallyCompanies TallyCompany[]
+  ledgerEntries  LedgerEntry[]
+
+  @@index([tenantId])
+}
+
+model PanProfile {
+  id             String        @id @default(cuid())
+  tenantId       String
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pan            String
+  holderName     String
+  holderType     PanHolderType
+  isActive       Boolean       @default(true)
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  familyMembers FamilyMember[]
+  legalEntities LegalEntity[]
+
+  @@unique([tenantId, pan])
+  @@index([tenantId])
+}
+
+// ---------------------------------------------------------------------------
+// Broker / demat
+// ---------------------------------------------------------------------------
+
+model BrokerAccount {
+  id               String           @id @default(cuid())
+  tenantId         String
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  memberId         String?
+  member           FamilyMember?    @relation(fields: [memberId], references: [id])
+  ownerName        String
+  broker           String
+  clientCode       String
+  // Opaque reference to a credential held in an external secrets vault.
+  // The actual broker username/password/TOTP is NEVER stored here.
+  credentialRef    String?
+  equityValue      Decimal          @default(0) @db.Decimal(18, 2)
+  cashBalance      Decimal          @default(0) @db.Decimal(18, 2)
+  connectionStatus ConnectionStatus @default(DISCONNECTED)
+  pendingAuth      Boolean          @default(false)
+  lastSyncedAt     DateTime?
+  externalSource   String?
+  externalId       String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  demat            DematAccount?
+  holdingSnapshots HoldingSnapshot[]
+  orders           Order[]
+  trades           Trade[]
+
+  @@index([tenantId])
+  @@index([memberId])
+}
+
+model DematAccount {
+  id              String        @id @default(cuid())
+  tenantId        String
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  brokerAccountId String        @unique
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+  dpId            String
+  boId            String
+  depository      Depository
+  externalSource  String?
+  externalId      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([tenantId])
+}
+
+// ---------------------------------------------------------------------------
+// Instruments & snapshots
+// ---------------------------------------------------------------------------
+
+model HoldingSnapshot {
+  id              String        @id @default(cuid())
+  tenantId        String
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+  instrumentId    String
+  instrument      Instrument    @relation(fields: [instrumentId], references: [id])
+  quantity        Decimal       @default(0) @db.Decimal(20, 4)
+  avgPrice        Decimal       @default(0) @db.Decimal(18, 4)
+  ltp             Decimal       @default(0) @db.Decimal(18, 4)
+  value           Decimal       @default(0) @db.Decimal(18, 2)
+  dayChangePct    Float         @default(0)
+  asOf            DateTime
+  externalSource  String?
+  externalId      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([tenantId])
+  @@index([brokerAccountId])
+  @@index([instrumentId])
+}
+
+model FundSnapshot {
+  id             String          @id @default(cuid())
+  tenantId       String
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  folioId        String
+  folio          MutualFundFolio @relation(fields: [folioId], references: [id], onDelete: Cascade)
+  nav            Decimal         @default(0) @db.Decimal(18, 4)
+  units          Decimal         @default(0) @db.Decimal(20, 4)
+  value          Decimal         @default(0) @db.Decimal(18, 2)
+  asOf           DateTime
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([tenantId])
+  @@index([folioId])
+}
+
+model MutualFundFolio {
+  id             String        @id @default(cuid())
+  tenantId       String
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  memberId       String?
+  member         FamilyMember? @relation(fields: [memberId], references: [id])
+  ownerName      String
+  amc            String
+  scheme         String
+  folioNo        String
+  category       FundCategory
+  distributor    String?
+  units          Decimal       @default(0) @db.Decimal(20, 4)
+  nav            Decimal       @default(0) @db.Decimal(18, 4)
+  invested       Decimal       @default(0) @db.Decimal(18, 2)
+  currentValue   Decimal       @default(0) @db.Decimal(18, 2)
+  xirr           Float         @default(0)
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  fundSnapshots FundSnapshot[]
+
+  @@index([tenantId])
+  @@index([memberId])
+}
+
+// ---------------------------------------------------------------------------
+// Insurance
+// ---------------------------------------------------------------------------
+
+model InsurancePolicy {
+  id             String        @id @default(cuid())
+  tenantId       String
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  memberId       String?
+  member         FamilyMember? @relation(fields: [memberId], references: [id])
+  insuredName    String
+  insurer        String
+  policyNo       String
+  type           PolicyType
+  sumAssured     Decimal       @default(0) @db.Decimal(18, 2)
+  annualPremium  Decimal       @default(0) @db.Decimal(18, 2)
+  premiumDueDate DateTime?
+  status         PolicyStatus  @default(ACTIVE)
+  nominee        String?
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([tenantId])
+  @@index([memberId])
+}
+
+// ---------------------------------------------------------------------------
+// Tally / ledger
+// ---------------------------------------------------------------------------
+
+model TallyCompany {
+  id             String       @id @default(cuid())
+  tenantId       String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  entityId       String?
+  entity         LegalEntity? @relation(fields: [entityId], references: [id])
+  companyName    String
+  gstin          String?
+  financialYear  String
+  syncState      SyncState    @default(NEVER)
+  ledgerCount    Int          @default(0)
+  closingBalance Decimal      @default(0) @db.Decimal(18, 2)
+  lastSyncedAt   DateTime?
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  ledgerEntries LedgerEntry[]
+
+  @@index([tenantId])
+  @@index([entityId])
+}
+
+model LedgerEntry {
+  id             String       @id @default(cuid())
+  tenantId       String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tallyCompanyId String
+  tallyCompany   TallyCompany @relation(fields: [tallyCompanyId], references: [id], onDelete: Cascade)
+  entityId       String?
+  entity         LegalEntity? @relation(fields: [entityId], references: [id])
+  date           DateTime
+  ledgerName     String
+  voucherType    VoucherType
+  voucherNo      String
+  narration      String?
+  debit          Decimal      @default(0) @db.Decimal(18, 2)
+  credit         Decimal      @default(0) @db.Decimal(18, 2)
+  runningBalance Decimal?     @db.Decimal(18, 2)
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([tenantId])
+  @@index([tallyCompanyId])
+}
+
+// ---------------------------------------------------------------------------
+// Documents
+// ---------------------------------------------------------------------------
+
+model Document {
+  id             String           @id @default(cuid())
+  tenantId       String
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String
+  category       DocumentCategory
+  ownerName      String?
+  sizeKb         Int              @default(0)
+  status         DocumentStatus   @default(PENDING)
+  // Pointer to encrypted object storage — document contents are not stored in the DB.
+  storageRef     String?
+  uploadedAt     DateTime?
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([tenantId])
+}
+
+// ---------------------------------------------------------------------------
+// Trading (types & records only — no execution in this build)
+// ---------------------------------------------------------------------------
+
+model Order {
+  id              String        @id @default(cuid())
+  tenantId        String
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+  instrumentId    String?
+  instrument      Instrument?   @relation(fields: [instrumentId], references: [id])
+  symbol          String
+  exchange        String?
+  side            OrderSide
+  orderType       OrderType     @default(MARKET)
+  quantity        Decimal       @default(0) @db.Decimal(20, 4)
+  limitPrice      Decimal?      @db.Decimal(18, 4)
+  validity        OrderValidity @default(DAY)
+  status          OrderStatus   @default(DRAFT)
+  // Controlled trading requires an approval before an order is placed.
+  approvalId      String?
+  approval        Approval?     @relation(fields: [approvalId], references: [id])
+  placedAt        DateTime?
+  externalSource  String?
+  externalId      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  trades Trade[]
+
+  @@index([tenantId])
+  @@index([brokerAccountId])
+}
+
+model Trade {
+  id              String        @id @default(cuid())
+  tenantId        String
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId         String
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+  instrumentId    String?
+  instrument      Instrument?   @relation(fields: [instrumentId], references: [id])
+  symbol          String
+  side            OrderSide
+  quantity        Decimal       @default(0) @db.Decimal(20, 4)
+  price           Decimal       @default(0) @db.Decimal(18, 4)
+  value           Decimal       @default(0) @db.Decimal(18, 2)
+  charges         Decimal       @default(0) @db.Decimal(18, 2)
+  tradedAt        DateTime
+  externalSource  String?
+  externalId      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([tenantId])
+  @@index([orderId])
+}
+
+// ---------------------------------------------------------------------------
+// Reconciliation
+// ---------------------------------------------------------------------------
+
+model ReconciliationRun {
+  id             String                    @id @default(cuid())
+  tenantId       String
+  tenant         Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source         String
+  status         ReconciliationRunStatus   @default(RUNNING)
+  startedAt      DateTime                  @default(now())
+  completedAt    DateTime?
+  exceptionCount Int                       @default(0)
+  note           String?
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+
+  exceptions ReconciliationException[]
+
+  @@index([tenantId])
+}
+
+model ReconciliationException {
+  id             String             @id @default(cuid())
+  tenantId       String
+  tenant         Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  runId          String?
+  run            ReconciliationRun? @relation(fields: [runId], references: [id])
+  source         String
+  description    String
+  severity       ExceptionSeverity  @default(MEDIUM)
+  amount         Decimal            @default(0) @db.Decimal(18, 2)
+  status         ExceptionStatus    @default(OPEN)
+  raisedAt       DateTime           @default(now())
+  resolvedAt     DateTime?
+  externalSource String?
+  externalId     String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([tenantId])
+  @@index([runId])
+}
+
+// ---------------------------------------------------------------------------
+// Workflow & audit
+// (Approval / AuditLog / ReconciliationRun are internally generated, not
+//  imported, so they intentionally omit externalSource / externalId.)
+// ---------------------------------------------------------------------------
+
+model Approval {
+  id          String        @id @default(cuid())
+  tenantId    String
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type        ApprovalType
+  request     String
+  entity      String?
+  requestedBy String?
+  makerId     String?
+  checkerId   String?
+  amount      Decimal?      @db.Decimal(18, 2)
+  stage       ApprovalStage @default(PENDING)
+  raisedAt    DateTime      @default(now())
+  decidedAt   DateTime?
+  note        String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  orders Order[]
+
+  @@index([tenantId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actor     String
+  action    String
+  entity    String
+  detail    String?
+  ipAddress String?
+  // Business event time — may differ from the row-insert createdAt.
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+model FeatureFlag {
+  id          String           @id @default(cuid())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  key         String
+  label       String
+  description String?
+  enabled     Boolean          @default(false)
+  scope       FeatureFlagScope @default(TENANT)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+}

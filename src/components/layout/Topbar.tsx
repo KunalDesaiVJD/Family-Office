@@ -2,24 +2,33 @@
 
 import { Icon } from "@/components/icons";
 import { Badge } from "@/components/ui/Badge";
+import { useAuth } from "@/auth/AuthContext";
 
 interface TopbarProps {
   onMenuClick: () => void;
-  tenantName?: string;
-  userName?: string;
-  userInitials?: string;
+}
+
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
 /**
  * Sticky application top bar. The menu button toggles the sidebar on mobile.
- * Search / notifications are presentational placeholders in this foundation build.
+ * User / tenant come from the (mock) auth context; search / notifications are
+ * presentational placeholders in this foundation build.
  */
-export function Topbar({
-  onMenuClick,
-  tenantName = "V J Desai Family",
-  userName = "Family Principal",
-  userInitials = "FP",
-}: TopbarProps) {
+export function Topbar({ onMenuClick }: TopbarProps) {
+  const { session, roleLabel } = useAuth();
+  const tenantName = session.tenant.name;
+  const userName = session.user.name;
+  const userInitials = initialsOf(userName);
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-white/80 px-4 backdrop-blur-md sm:px-6">
       {/* Mobile menu toggle */}
@@ -75,9 +84,10 @@ export function Topbar({
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-navy to-brand-royal text-xs font-semibold text-white">
             {userInitials}
           </span>
-          <span className="hidden text-sm font-medium text-ink sm:block">
-            {userName}
-          </span>
+          <div className="hidden leading-tight sm:block">
+            <p className="text-sm font-medium text-ink">{userName}</p>
+            <p className="text-[11px] text-muted">{roleLabel}</p>
+          </div>
         </div>
       </div>
     </header>
