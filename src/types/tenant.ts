@@ -9,12 +9,33 @@ export interface Tenant {
   name: string;
   slug: string;
   plan: PlanTier;
+  /** Subscription plan id (see config/plans). */
+  planId: string;
   baseCurrency: string;
+  /** IANA timezone used for all date/time rendering, e.g. "Asia/Kolkata". */
+  timeZone: string;
   primaryContact: string;
   onboardedAt: string;
-  /** Future billing plans / connector toggles live behind feature flags. */
-  featureFlags: Record<string, boolean>;
+  /** Per-tenant feature-flag overrides on top of the platform defaults. */
+  featureFlags: Partial<Record<FeatureFlagKey, boolean>>;
 }
+
+/** Canonical set of platform feature-flag keys. */
+export type FeatureFlagKey =
+  | "brokerHub"
+  | "mutualFunds"
+  | "bankBalances"
+  | "tallySync"
+  | "insuranceVault"
+  | "aiDesk"
+  | "documentVault"
+  | "taxCentre"
+  | "workflow"
+  | "masterData"
+  | "controlledTrading"
+  | "billing"
+  | "liveConnectors"
+  | "ssoEnforcement";
 
 export type UserRole =
   | "owner"
@@ -36,8 +57,11 @@ export interface TenantUser {
   lastActiveAt: string;
 }
 
+/** Canonical alias — a platform user is a tenant-scoped user. */
+export type User = TenantUser;
+
 export interface FeatureFlag {
-  key: string;
+  key: FeatureFlagKey;
   label: string;
   description: string;
   enabled: boolean;
@@ -54,3 +78,6 @@ export interface AuditLogEntry {
   timestamp: string;
   ipAddress?: string;
 }
+
+/** Canonical alias for a single audit-log record. */
+export type AuditLog = AuditLogEntry;

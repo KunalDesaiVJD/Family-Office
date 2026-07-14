@@ -15,6 +15,9 @@ export interface Holding {
   sector: string;
 }
 
+/** Alias for a consolidated portfolio holding. */
+export type PortfolioHolding = Holding;
+
 export type FundCategory =
   | "equity"
   | "debt"

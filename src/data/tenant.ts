@@ -9,7 +9,9 @@ export const tenant: Tenant = {
   name: "V J Desai Family",
   slug: "vj-desai-family",
   plan: "family",
+  planId: "plan_family",
   baseCurrency: "INR",
+  timeZone: "Asia/Kolkata",
   primaryContact: "info@vjdesai.com",
   onboardedAt: "2025-11-02",
   featureFlags: {
