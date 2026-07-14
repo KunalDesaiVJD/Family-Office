@@ -17,7 +17,11 @@ import {
   formatINR,
   formatSignedCompactINR,
   formatPercent,
+  formatDateTime,
 } from "@/lib/format";
+import { getConnectorHealth } from "@/lib/brokerStatus";
+import { ConnectorStatusBanner } from "@/components/broker/ConnectorStatusBanner";
+import { angelLastSyncedAt } from "@/data/mockAngel";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -40,6 +44,7 @@ function SectionHeading({
 
 export default function DashboardPage() {
   const up = m.todaysMovement.amount >= 0;
+  const health = getConnectorHealth();
 
   return (
     <div className="space-y-10">
@@ -58,6 +63,8 @@ export default function DashboardPage() {
           </>
         }
       />
+
+      <ConnectorStatusBanner health={health} />
 
       {/* Tier 1 — net worth hero + allocation */}
       <div className="grid gap-6 xl:grid-cols-3">
@@ -224,7 +231,7 @@ export default function DashboardPage() {
         <div className="grid gap-6 lg:grid-cols-2">
           <Card
             title="Broker Account Overview"
-            description="Equity value and connection health by account."
+            description={`Equity value and connection health · Last synced ${formatDateTime(angelLastSyncedAt)}`}
             action={
               <Button variant="ghost" size="sm" href="/broker-hub">
                 Open Broker Hub
