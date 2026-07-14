@@ -12,19 +12,11 @@ import {
 } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import { formatNumber, formatDate } from "@/lib/format";
+import { documentCategoryLabel } from "@/lib/status";
 import { vaultDocuments, TOTAL_DOCUMENTS } from "@/data/mockDocuments";
 import type { VaultDocument } from "@/types/document";
 
 export const metadata: Metadata = { title: "Document Vault" };
-
-const CATEGORY_LABELS: Record<VaultDocument["category"], string> = {
-  statement: "Statement",
-  contract_note: "Contract Note",
-  policy: "Policy",
-  legal: "Legal",
-  tax: "Tax",
-  kyc: "KYC",
-};
 
 const STATUS_TONES: Record<VaultDocument["status"], BadgeTone> = {
   verified: "success",
@@ -60,7 +52,7 @@ const columns: DataTableColumn<VaultDocument>[] = [
     key: "category",
     header: "Category",
     render: (_v, row) => (
-      <Badge tone="neutral">{CATEGORY_LABELS[row.category]}</Badge>
+      <Badge tone="neutral">{documentCategoryLabel[row.category]}</Badge>
     ),
   },
   {
@@ -104,7 +96,7 @@ export default function DocumentVaultPage() {
       <PageHeader
         eyebrow="V J Desai Family · Operations"
         title="Document Vault"
-        description="Secure repository for statements, contract notes, policy and legal documents across the family office."
+        description="Secure repository for Angel contract notes, ledgers, statements, policy and tax documents across the family office."
         actions={
           <Button
             variant="outline"
@@ -163,7 +155,7 @@ export default function DocumentVaultPage() {
         <EmptyState
           icon={<Icon name="documents" size={18} />}
           title="Drag-and-drop upload with encryption at rest"
-          description="Drop statements, contract notes and legal files into the vault to have them classified automatically, encrypted at rest with per-tenant keys and reconciled against family member and entity records. Automated ingestion and retention policies are rolling out in this beta module."
+          description="Drop contract notes, broker ledgers and statements into the vault to have them classified automatically, encrypted at rest with per-tenant keys and reconciled against family member and entity records. Automated ingestion and retention policies are rolling out in this beta module."
           action={
             <Button
               variant="secondary"

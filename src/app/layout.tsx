@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: "%s · Family Wealth OS",
   },
   description:
-    "Private family wealth command centre — consolidated net worth, broker, mutual funds, banking, Tally, insurance, tax and document operations.",
+    "Private family wealth command centre — consolidated net worth, broker, mutual funds, Tally, insurance, tax, reconciliation and document operations.",
   applicationName: "Family Wealth OS",
   robots: { index: false, follow: false },
 };

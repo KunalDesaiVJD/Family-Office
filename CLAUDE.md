@@ -8,15 +8,29 @@ The first version is for one family only, but all code, data structures, routes,
 
 This product consolidates:
 - Demat accounts
-- Broker balances
+- Broker balances (Angel funds / RMS)
 - Mutual funds
-- Bank balances
 - Tally balances
 - Insurance policies
 - Documents
-- Tax reports
-- AI exception summaries
+- Tax reports (FIFO capital gains)
+- Investment reconciliation
 - Future controlled trading
+
+## Out of Scope (current version)
+
+The following are **not part of the current V J Desai Family version** and must
+not be built, navigated to, or shown anywhere in the UI, dashboard, routes, mock
+data or feature flags:
+
+- **Bank Balance module** — no bank accounts, no bank balances, no bank
+  statements, no Account Aggregator, no bank reconciliation, no BankConnector.
+  Broker cash from Angel funds / RMS is allowed; a bank balance is not.
+- **AI Desk module** — no AI desk, AI assistant, AI summary, AI insight, AI
+  exception explanation, AI task list or LLM/prompt scaffolding.
+
+Both may return as optional future modules, but they must stay absent from the
+current product.
 
 ## Current Build Scope
 
@@ -71,7 +85,7 @@ Theme values:
 Visual style:
 - Enterprise SaaS dashboard
 - Family office command centre
-- Bank-grade clarity
+- Institution-grade clarity
 - Premium financial UI
 - Soft shadows
 - Large rounded cards
@@ -101,7 +115,6 @@ Use these concepts:
 - Broker account
 - Demat account
 - Mutual fund folio
-- Bank account
 - Insurance policy
 - Tally company
 - Document
@@ -109,21 +122,24 @@ Use these concepts:
 - Approval
 - Audit log
 
-## First UI Modules
+## UI Modules
 
-Create screens for:
+The current version has exactly these screens:
 - Dashboard
 - Family Members
 - Broker Hub
 - Mutual Funds
-- Bank Balances
-- Tally Sync
 - Insurance Vault
+- Trade Import
 - Tax Centre
+- Reconciliation Centre
+- Tally Sync
 - Document Vault
-- AI Desk
 - Workflow Centre
 - Admin Settings
+- Master Data (collapsible group)
+
+There is no Bank Balances screen and no AI Desk screen — see "Out of Scope".
 
 ## Component Rules
 

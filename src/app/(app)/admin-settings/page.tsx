@@ -82,11 +82,19 @@ const featureFlags: FeatureFlag[] = [
     scope: "tenant",
   },
   {
-    key: "aiDesk",
-    label: "AI Desk",
+    key: "taxCentre",
+    label: "Tax Centre",
     description:
-      "Automated exception summaries and narrative insights over consolidated data.",
-    enabled: tenant.featureFlags.aiDesk ?? true,
+      "FIFO capital-gains computation, STCG/LTCG schedules and trade import.",
+    enabled: tenant.featureFlags.taxCentre ?? true,
+    scope: "tenant",
+  },
+  {
+    key: "reconciliation",
+    label: "Reconciliation Centre",
+    description:
+      "Broker holdings, funds and trade book reconciled against the internal ledger.",
+    enabled: tenant.featureFlags.reconciliation ?? true,
     scope: "tenant",
   },
   {

@@ -1,17 +1,9 @@
 import { Badge, type BadgeTone } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import { vaultDocuments } from "@/data/mockDocuments";
-import type { DocumentCategory, DocumentStatus } from "@/types/document";
+import type { DocumentStatus } from "@/types/document";
+import { documentCategoryLabel } from "@/lib/status";
 import { formatDate } from "@/lib/format";
-
-const categoryLabel: Record<DocumentCategory, string> = {
-  statement: "Statement",
-  contract_note: "Contract Note",
-  policy: "Policy",
-  legal: "Legal",
-  tax: "Tax",
-  kyc: "KYC",
-};
 
 const statusTone: Record<DocumentStatus, BadgeTone> = {
   verified: "success",
@@ -45,7 +37,7 @@ export function DocumentsPreview({ limit = 5 }: { limit?: number }) {
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-ink">{d.name}</p>
               <p className="text-xs text-muted">
-                {categoryLabel[d.category]} · {formatDate(d.uploadedAt)}
+                {documentCategoryLabel[d.category]} · {formatDate(d.uploadedAt)}
               </p>
             </div>
           </div>

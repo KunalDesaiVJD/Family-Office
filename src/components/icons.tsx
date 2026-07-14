@@ -8,12 +8,11 @@ export type IconName =
   | "family"
   | "broker"
   | "funds"
-  | "bank"
+  | "cash"
   | "insurance"
   | "tally"
   | "tax"
   | "documents"
-  | "ai"
   | "workflow"
   | "admin"
   | "search"
@@ -67,11 +66,11 @@ const paths: Record<IconName, React.ReactNode> = {
       <path d="M20 7h-3.5M20 7v3.5" />
     </>
   ),
-  bank: (
+  cash: (
     <>
-      <path d="M3 9.5L12 4l9 5.5" />
-      <path d="M5 10v7M10 10v7M14 10v7M19 10v7" />
-      <path d="M3 20h18" />
+      <rect x="2.5" y="6" width="19" height="12" rx="2" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M6 12h.01M18 12h.01" />
     </>
   ),
   insurance: (
@@ -100,14 +99,6 @@ const paths: Record<IconName, React.ReactNode> = {
       <path d="M7 3h7l4 4v14H7z" />
       <path d="M13 3v4h4" />
       <path d="M10 13h5M10 16h5" />
-    </>
-  ),
-  ai: (
-    <>
-      <rect x="5" y="7" width="14" height="12" rx="3" />
-      <path d="M12 4v3M9 12h.01M15 12h.01" />
-      <path d="M9 16c1 .8 4 .8 6 0" />
-      <path d="M2 12h3M19 12h3" />
     </>
   ),
   workflow: (

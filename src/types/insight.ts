@@ -1,4 +1,6 @@
-// Dashboard intelligence types: module readiness + AI daily brief.
+// Dashboard intelligence types: module readiness.
+// There is intentionally no AI type (AiDailySummary / AiInsight / AiResponse) —
+// the AI Desk module is out of scope for the current version.
 
 import type { IconName } from "@/components/icons";
 
@@ -16,18 +18,5 @@ export interface ModuleReadinessItem {
   progress: number;
 }
 
+/** Tone used by exception / highlight rows across the dashboard. */
 export type InsightTone = "positive" | "warning" | "info" | "negative";
-
-export interface AiHighlight {
-  id: string;
-  tone: InsightTone;
-  text: string;
-}
-
-export interface AiDailySummary {
-  date: string;
-  headline: string;
-  highlights: AiHighlight[];
-  exceptionsSummary: string;
-  confidence: "high" | "medium" | "low";
-}

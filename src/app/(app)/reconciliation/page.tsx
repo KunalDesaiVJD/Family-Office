@@ -16,7 +16,7 @@ export default function ReconciliationPage() {
       <PageHeader
         eyebrow="V J Desai Family · Operations"
         title="Reconciliation Centre"
-        description="Investment reconciliation across broker holdings, funds, trade book and contract notes. Bank reconciliation is out of scope."
+        description="Investment reconciliation across Angel holdings, broker funds, trade book and contract notes, matched against the internal FIFO ledger."
       />
 
       <ReconciliationClient

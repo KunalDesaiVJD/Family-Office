@@ -40,7 +40,7 @@ export const APP_ROLES: Record<AppRole, AppRoleDefinition> = {
       "mutualFunds:view",
       "trading:view",
       "trading:create",
-      "aiDesk:view",
+      "reconciliation:view",
     ],
   },
   accountant: {
@@ -59,6 +59,8 @@ export const APP_ROLES: Record<AppRole, AppRoleDefinition> = {
       "tax:view",
       "tax:edit",
       "tax:export",
+      "reconciliation:view",
+      "reconciliation:edit",
     ],
   },
   viewer: {
@@ -77,7 +79,7 @@ export const APP_ROLES: Record<AppRole, AppRoleDefinition> = {
       "tally:view",
       "documents:view",
       "tax:view",
-      "aiDesk:view",
+      "reconciliation:view",
       "workflow:view",
     ],
   },
@@ -91,7 +93,7 @@ export const APP_ROLES: Record<AppRole, AppRoleDefinition> = {
       "workflow:approve",
       "audit:view",
       "audit:export",
-      "aiDesk:view",
+      "reconciliation:view",
     ],
   },
   developer_support: {
@@ -103,7 +105,7 @@ export const APP_ROLES: Record<AppRole, AppRoleDefinition> = {
       "admin:view",
       "audit:view",
       "workflow:view",
-      "aiDesk:view",
+      "reconciliation:view",
     ],
   },
 };

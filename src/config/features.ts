@@ -2,16 +2,16 @@
 
 import type { FeatureFlagKey } from "@/types/tenant";
 
+// NOTE: there are intentionally no bankBalances or aiDesk flags — the Bank
+// Balance and AI Desk modules are out of scope for the current version.
 export const DEFAULT_FEATURE_FLAGS: Record<FeatureFlagKey, boolean> = {
   brokerHub: true,
   mutualFunds: true,
-  // Gates the UI-only mock Bank Balances module — there is intentionally no bank connector.
-  bankBalances: true,
   tallySync: true,
   insuranceVault: true,
-  aiDesk: true,
   documentVault: true,
   taxCentre: true,
+  reconciliation: true,
   workflow: true,
   masterData: true,
   // Off by default — future / gated capabilities.

@@ -1,6 +1,5 @@
-// Portfolio domain types: listed holdings, mutual funds, bank accounts, aggregates.
-
-import type { ConnectionStatus } from "./broker";
+// Portfolio domain types: listed holdings, mutual funds, aggregates.
+// There is intentionally no BankAccount type — bank aggregation is out of scope.
 
 export interface Holding {
   id: string;
@@ -42,21 +41,6 @@ export interface MutualFundFolio {
   xirr: number;
   /** Distribution platform / ARN holder the folio is transacted through. */
   distributor: string;
-}
-
-export type BankAccountType = "savings" | "current" | "fd" | "nre" | "nro";
-
-export interface BankAccount {
-  id: string;
-  tenantId: string;
-  entityId: string;
-  holderName: string;
-  bank: string;
-  accountType: BankAccountType;
-  maskedNumber: string;
-  balance: number;
-  connectionStatus: ConnectionStatus;
-  lastSyncedAt: string;
 }
 
 export interface NetWorthPoint {

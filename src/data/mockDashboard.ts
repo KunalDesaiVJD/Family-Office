@@ -1,15 +1,14 @@
 import type { NetWorthPoint, AllocationSlice } from "@/types/portfolio";
-import type {
-  ModuleReadinessItem,
-  AiDailySummary,
-} from "@/types/insight";
+import type { ModuleReadinessItem } from "@/types/insight";
 import { familyMembers } from "./mockFamily";
 import { brokerAccounts } from "./mockBrokerAccounts";
 import { mutualFundFolios } from "./mockMutualFunds";
-import { bankAccounts } from "./mockBank";
 import { insurancePolicies, premiumsDueSoon } from "./mockInsurance";
 import { reconciliationExceptions, tallyCompanies } from "./mockTally";
 import { TOTAL_DOCUMENTS } from "./mockDocuments";
+
+// NOTE: there is intentionally no bank data and no AI summary here — the Bank
+// Balance and AI Desk modules are out of scope for the current version.
 
 // Re-export tenant identity so existing imports of these from "@/data/mockDashboard"
 // keep working while the canonical source lives in ./tenant (no import cycle).
@@ -24,9 +23,7 @@ const consolidatedNetWorth = sum(familyMembers, (m) => m.netWorth);
 const totalListedEquity = sum(brokerAccounts, (a) => a.equityValue);
 const brokerCash = sum(brokerAccounts, (a) => a.cashBalance);
 const mutualFundValue = sum(mutualFundFolios, (f) => f.currentValue);
-const bankBalance = sum(bankAccounts, (a) => a.balance);
 const insuranceCover = sum(insurancePolicies, (p) => p.sumAssured);
-const bankAndCash = bankBalance + brokerCash;
 
 const openExceptions = reconciliationExceptions.filter(
   (e) => e.status !== "resolved",
@@ -40,8 +37,8 @@ export interface DashboardMetrics {
   consolidatedNetWorth: number;
   totalListedEquity: number;
   mutualFundValue: number;
-  bankBalance: number;
   insuranceCover: number;
+  /** Broker cash from Angel funds / RMS — not a bank balance. */
   brokerCash: number;
   openExceptions: number;
   pendingAuthentications: number;
@@ -53,7 +50,6 @@ export const dashboardMetrics: DashboardMetrics = {
   consolidatedNetWorth,
   totalListedEquity,
   mutualFundValue,
-  bankBalance,
   insuranceCover,
   brokerCash,
   openExceptions,
@@ -76,7 +72,7 @@ export const netWorthTrend: NetWorthPoint[] = [
 export const allocation: AllocationSlice[] = [
   { label: "Listed Equity", value: totalListedEquity, color: "#2563eb" },
   { label: "Mutual Funds", value: mutualFundValue, color: "#1e40af" },
-  { label: "Bank & Cash", value: bankAndCash, color: "#10b981" },
+  { label: "Broker Cash", value: brokerCash, color: "#10b981" },
   { label: "Real Estate", value: 360_000_000, color: "#13284c" },
   { label: "Unlisted / PE", value: 168_800_000, color: "#f59e0b" },
 ];
@@ -105,17 +101,6 @@ export const moduleReadiness: ModuleReadinessItem[] = [
     progress: 100,
   },
   {
-    key: "bank-balances",
-    title: "Bank Balances",
-    description:
-      "Aggregated balances across savings, current and deposit accounts by entity.",
-    status: "beta",
-    href: "/bank-balances",
-    meta: `${bankAccounts.length} accounts linked`,
-    icon: "bank",
-    progress: 70,
-  },
-  {
     key: "tally-sync",
     title: "Tally Sync",
     description:
@@ -141,34 +126,34 @@ export const moduleReadiness: ModuleReadinessItem[] = [
     key: "tax-centre",
     title: "Tax Centre",
     description:
-      "Capital gains, advance tax and filing status across PANs and entities.",
-    status: "planned",
+      "FIFO capital gains, STCG/LTCG schedules and charges across PANs and entities.",
+    status: "live",
     href: "/tax-centre",
-    meta: "AY 2026-27",
+    meta: "FY 2026-27",
     icon: "tax",
-    progress: 25,
+    progress: 100,
+  },
+  {
+    key: "reconciliation",
+    title: "Reconciliation Centre",
+    description:
+      "Broker holdings, funds and trade book reconciled against the internal ledger.",
+    status: "live",
+    href: "/reconciliation",
+    meta: "Investment reconciliation",
+    icon: "sync",
+    progress: 100,
   },
   {
     key: "document-vault",
     title: "Document Vault",
     description:
-      "Secure repository for statements, contract notes and legal documents.",
+      "Secure repository for contract notes, statements and policy documents.",
     status: "beta",
     href: "/document-vault",
     meta: `${TOTAL_DOCUMENTS} documents`,
     icon: "documents",
     progress: 65,
-  },
-  {
-    key: "ai-desk",
-    title: "AI Desk",
-    description:
-      "Automated exception summaries and narrative insights over consolidated data.",
-    status: "beta",
-    href: "/ai-desk",
-    meta: `${openExceptions} open exceptions`,
-    icon: "ai",
-    progress: 55,
   },
   {
     key: "workflow-centre",
@@ -183,36 +168,5 @@ export const moduleReadiness: ModuleReadinessItem[] = [
   },
 ];
 
-export const aiDailySummary: AiDailySummary = {
-  date: "2026-07-13",
-  headline:
-    "Consolidated wealth up 0.42% today; two broker connections need re-authentication.",
-  highlights: [
-    {
-      id: "hl_1",
-      tone: "positive",
-      text: "Listed equity gained ₹62.4 L, led by Larsen & Toubro (+1.24%) and Reliance (+0.82%).",
-    },
-    {
-      id: "hl_2",
-      tone: "warning",
-      text: "Angel One (Desai Family HUF) and ICICI Direct (Vijay Desai) require re-authentication to resume sync.",
-    },
-    {
-      id: "hl_3",
-      tone: "info",
-      text: "All 7 SMC-distributed mutual fund folios refreshed NAVs; the fund book stands at ₹31.82 Cr.",
-    },
-    {
-      id: "hl_4",
-      tone: "warning",
-      text: "5 insurance premiums totalling ₹13.85 L fall due within 45 days, including one policy in grace.",
-    },
-  ],
-  exceptionsSummary:
-    "7 open reconciliation exceptions across brokers, banks and Tally — 2 high-severity, ₹15.8 L exposure.",
-  confidence: "high",
-};
-
-/** Shared exception feed consumed by the dashboard preview and the AI Desk. */
+/** Shared operational exception feed consumed by the dashboard preview. */
 export const recentExceptions = reconciliationExceptions;

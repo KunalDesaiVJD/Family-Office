@@ -20,16 +20,16 @@ export interface Tenant {
   featureFlags: Partial<Record<FeatureFlagKey, boolean>>;
 }
 
-/** Canonical set of platform feature-flag keys. */
+/** Canonical set of platform feature-flag keys. Bank Balances and AI Desk are
+ * deliberately absent — both modules are out of scope for this version. */
 export type FeatureFlagKey =
   | "brokerHub"
   | "mutualFunds"
-  | "bankBalances"
   | "tallySync"
   | "insuranceVault"
-  | "aiDesk"
   | "documentVault"
   | "taxCentre"
+  | "reconciliation"
   | "workflow"
   | "masterData"
   | "controlledTrading"

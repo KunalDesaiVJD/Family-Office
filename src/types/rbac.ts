@@ -22,7 +22,7 @@ export type PermissionResource =
   | "tally"
   | "documents"
   | "tax"
-  | "aiDesk"
+  | "reconciliation"
   | "workflow"
   | "admin"
   | "billing"

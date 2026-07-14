@@ -1,18 +1,19 @@
 // Centralised route constants — the single source of truth for app paths.
 
+// Bank Balances and AI Desk are intentionally absent — they are out of scope
+// for the current V J Desai Family version.
+
 export const ROUTES = {
   dashboard: "/dashboard",
   family: "/family",
   brokerHub: "/broker-hub",
   mutualFunds: "/mutual-funds",
-  bankBalances: "/bank-balances",
   insuranceVault: "/insurance-vault",
   tallySync: "/tally-sync",
   taxCentre: "/tax-centre",
   taxImports: "/tax-centre/imports",
   reconciliation: "/reconciliation",
   documentVault: "/document-vault",
-  aiDesk: "/ai-desk",
   workflowCentre: "/workflow-centre",
   adminSettings: "/admin-settings",
   masters: {
@@ -21,7 +22,6 @@ export const ROUTES = {
     panMapping: "/masters/pan-mapping",
     brokerAccounts: "/masters/broker-accounts",
     dematAccounts: "/masters/demat-accounts",
-    bankAccounts: "/masters/bank-accounts",
     mutualFundFolios: "/masters/mutual-fund-folios",
     insurancePolicies: "/masters/insurance-policies",
     tallyCompanies: "/masters/tally-companies",

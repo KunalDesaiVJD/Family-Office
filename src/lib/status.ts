@@ -9,6 +9,7 @@ import type {
   ExceptionStatus,
 } from "@/types/tally";
 import type { PolicyStatus } from "@/types/insurance";
+import type { DocumentCategory } from "@/types/document";
 
 export const connectionTone: Record<ConnectionStatus, BadgeTone> = {
   connected: "success",
@@ -76,4 +77,18 @@ export const policyStatusLabel: Record<PolicyStatus, string> = {
   grace: "Grace",
   lapsed: "Lapsed",
   matured: "Matured",
+};
+
+/** Visible document categories. No bank-statement category by design. */
+export const documentCategoryLabel: Record<DocumentCategory, string> = {
+  angel_contract_note: "Angel Contract Note",
+  angel_ledger: "Angel Ledger",
+  angel_trade_report: "Angel Trade Report",
+  angel_holding_report: "Angel Holding Report",
+  cas_statement: "CAS Statement",
+  mutual_fund_statement: "Mutual Fund Statement",
+  insurance_policy: "Insurance Policy",
+  tally_export: "Tally Export",
+  tax_report: "Tax Report",
+  other: "Other",
 };

@@ -50,7 +50,7 @@ const TABS: { key: string; label: string; icon: IconName }[] = [
   { key: "overview", label: "Overview", icon: "broker" },
   { key: "accounts", label: "Accounts", icon: "family" },
   { key: "holdings", label: "Holdings", icon: "funds" },
-  { key: "funds", label: "Funds", icon: "bank" },
+  { key: "funds", label: "Funds", icon: "cash" },
   { key: "orders", label: "Orders", icon: "documents" },
   { key: "trades", label: "Trades", icon: "check" },
   { key: "positions", label: "Positions", icon: "sparkle" },
@@ -231,7 +231,7 @@ export function BrokerHubTabs(props: Props) {
             <MetricCard label="Angel Accounts" value={formatNumber(accounts.length)} sublabel="Configured" icon={<Icon name="family" size={18} />} />
             <MetricCard label="Authenticated" value={formatNumber(authed)} tone="positive" sublabel="Live sessions" icon={<Icon name="check" size={18} />} />
             <MetricCard label="Total Equity" value={formatCompactINR(totalEquity)} tone="positive" sublabel="Across accounts" />
-            <MetricCard label="Available Cash" value={formatCompactINR(totalCash)} sublabel="Broker cash" icon={<Icon name="bank" size={18} />} />
+            <MetricCard label="Available Cash" value={formatCompactINR(totalCash)} sublabel="Broker cash" icon={<Icon name="cash" size={18} />} />
             <MetricCard label="Failed Syncs" value={formatNumber(failed)} tone={failed > 0 ? "negative" : "default"} sublabel="Need attention" icon={<Icon name="alert" size={18} />} />
           </div>
           <Card title="Accounts at a glance" description="Family member → Angel client-code mapping with auth and sync status." padded={false}>
@@ -270,7 +270,7 @@ export function BrokerHubTabs(props: Props) {
       {tab === "funds" && (
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <MetricCard label="Available Cash" value={formatCompactINR(totalCash)} tone="positive" sublabel="All accounts" icon={<Icon name="bank" size={18} />} />
+            <MetricCard label="Available Cash" value={formatCompactINR(totalCash)} tone="positive" sublabel="All accounts" icon={<Icon name="cash" size={18} />} />
             <MetricCard label="Net" value={formatCompactINR(totalNet)} sublabel="Aggregate" />
             <MetricCard label="Utilised" value={formatCompactINR(totalUtilised)} tone="warning" sublabel="Margin used" />
             <MetricCard label="Collateral" value={formatCompactINR(funds.collateral)} sublabel="Pledged" />

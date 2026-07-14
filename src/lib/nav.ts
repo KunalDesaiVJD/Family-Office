@@ -15,7 +15,10 @@ export interface NavSection {
 }
 
 /** Primary navigation. Grouped for enterprise scannability. Paths come from
- * the shared ROUTES constants so there is a single source of truth. */
+ * the shared ROUTES constants so there is a single source of truth.
+ *
+ * Bank Balances and AI Desk are deliberately NOT in the navigation — both are
+ * out of scope for the current V J Desai Family version. */
 export const navSections: NavSection[] = [
   {
     title: "Overview",
@@ -27,7 +30,6 @@ export const navSections: NavSection[] = [
       { label: "Family Members", href: ROUTES.family, icon: "family" },
       { label: "Broker Hub", href: ROUTES.brokerHub, icon: "broker" },
       { label: "Mutual Funds", href: ROUTES.mutualFunds, icon: "funds" },
-      { label: "Bank Balances", href: ROUTES.bankBalances, icon: "bank" },
       { label: "Insurance Vault", href: ROUTES.insuranceVault, icon: "insurance" },
     ],
   },
@@ -39,12 +41,6 @@ export const navSections: NavSection[] = [
       { label: "Reconciliation Centre", href: ROUTES.reconciliation, icon: "sync" },
       { label: "Tally Sync", href: ROUTES.tallySync, icon: "tally" },
       { label: "Document Vault", href: ROUTES.documentVault, icon: "documents" },
-    ],
-  },
-  {
-    title: "Intelligence",
-    items: [
-      { label: "AI Desk", href: ROUTES.aiDesk, icon: "ai" },
       { label: "Workflow Centre", href: ROUTES.workflowCentre, icon: "workflow" },
     ],
   },
@@ -57,7 +53,6 @@ export const navSections: NavSection[] = [
       { label: "PAN Mapping", href: ROUTES.masters.panMapping, icon: "admin" },
       { label: "Broker Accounts", href: ROUTES.masters.brokerAccounts, icon: "broker" },
       { label: "Demat Accounts", href: ROUTES.masters.dematAccounts, icon: "funds" },
-      { label: "Bank Accounts", href: ROUTES.masters.bankAccounts, icon: "bank" },
       { label: "Mutual Fund Folios", href: ROUTES.masters.mutualFundFolios, icon: "funds" },
       { label: "Insurance Policies", href: ROUTES.masters.insurancePolicies, icon: "insurance" },
       { label: "Tally Companies", href: ROUTES.masters.tallyCompanies, icon: "tally" },

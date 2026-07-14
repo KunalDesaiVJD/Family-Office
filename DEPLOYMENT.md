@@ -3,7 +3,8 @@
 This document explains how to deploy the **Family Wealth OS** frontend to
 [Vercel](https://vercel.com). The app is a Next.js 15 (App Router) project that
 currently runs on **mock data only** — no database, no authentication, and no
-real broker/bank/API connections.
+real broker/API connections. There is no Bank Balance module and no AI Desk
+module in the current version.
 
 > **Bottom line:** this app requires **zero environment variables** to build and
 > run. You can import it into Vercel and deploy with no configuration.
@@ -13,9 +14,9 @@ real broker/bank/API connections.
 ## 1. Architecture & hosting model
 
 - **Frontend (this repo)** → hosted on **Vercel** (Next.js serverless/edge).
-- **Future connector backend** (broker/bank/Tally integrations) → will be hosted
+- **Future connector backend** (broker/Tally integrations) → will be hosted
   **separately** (e.g. a container/VM) if a **static outbound IP** is required by
-  a broker/bank API. That backend is **out of scope** for this deployment.
+  a broker API. That backend is **out of scope** for this deployment.
 - The frontend talks to that future backend over HTTPS via a server-only base URL
   (`BROKER_CONNECTOR_BASE_URL`, etc.) — never directly from the browser, and never
   with embedded credentials.
@@ -98,13 +99,13 @@ Set each variable for the environments you need: **Production**, **Preview**, an
 - Any variable prefixed **`NEXT_PUBLIC_`** is **compiled into the JavaScript that
   ships to every visitor's browser**. It is trivially readable via DevTools or by
   viewing the bundle — it is **not** a secret.
-- Therefore **broker API keys, bank credentials, TOTP secrets, `AUTH_SECRET`,
-  database URLs, and AI API keys must never be `NEXT_PUBLIC_`.** Doing so leaks
-  them to the public and would let anyone impersonate the app or drain quotas.
+- Therefore **broker API keys, TOTP secrets, `AUTH_SECRET` and database URLs must
+  never be `NEXT_PUBLIC_`.** Doing so leaks them to the public and would let
+  anyone impersonate the app or drain quotas.
 - Secrets belong **only** on the server: read them in Server Components / Route
   Handlers / a separate backend, keep them as **unprefixed** (server-only) Vercel
   env vars, and expose functionality through your own server endpoints.
-- Real broker/bank credentials should live in a **dedicated secrets vault** behind
+- Real broker credentials should live in a **dedicated secrets vault** behind
   the connector backend — not in env vars and never in the frontend.
 
 ---
@@ -164,9 +165,10 @@ good deployment **→ ⋯ → Promote to Production**.
 After the first deploy, verify:
 
 - `/` redirects to `/dashboard`.
-- All 12 module routes load (`/family`, `/broker-hub`, `/mutual-funds`,
-  `/bank-balances`, `/tally-sync`, `/insurance-vault`, `/tax-centre`,
-  `/document-vault`, `/ai-desk`, `/workflow-centre`, `/admin-settings`).
+- All module routes load (`/family`, `/broker-hub`, `/mutual-funds`,
+  `/insurance-vault`, `/tax-centre`, `/tax-centre/imports`, `/reconciliation`,
+  `/tally-sync`, `/document-vault`, `/workflow-centre`, `/admin-settings`).
+- `/bank-balances` and `/ai-desk` return **404** — both modules are out of scope.
 - "Last synced" timestamps show **IST** (the app pins `Asia/Kolkata`, so times are
   correct even though Vercel builds in UTC).
 - The browser tab shows the brand favicon.

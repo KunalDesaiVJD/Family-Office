@@ -98,7 +98,10 @@ npm run prisma:studio        # prisma studio
   to an external secrets vault — never the credential itself.
 - **No document bodies:** `Document.storageRef` points at encrypted object
   storage; contents are not stored in the DB.
-- There is **no BankAccount model** and **no bank sync** by design.
+- There is **no BankAccount model** and **no bank sync** by design — the Bank
+  Balance module is out of scope for the current version.
+- There is **no AI model, provider or prompt table** — the AI Desk module is out
+  of scope for the current version.
 
 ---
 

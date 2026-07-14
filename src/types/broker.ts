@@ -8,7 +8,7 @@ export type BrokerName =
   | "Angel One"
   | "Groww";
 
-/** Shared connector state used across broker, bank and other integrations. */
+/** Shared connector state used across broker, fund and other integrations. */
 export type ConnectionStatus =
   | "connected"
   | "auth_required"

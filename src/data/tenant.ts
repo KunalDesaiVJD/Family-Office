@@ -17,10 +17,11 @@ export const tenant: Tenant = {
   featureFlags: {
     brokerHub: true,
     mutualFunds: true,
-    bankBalances: true,
     tallySync: true,
     insuranceVault: true,
-    aiDesk: true,
+    taxCentre: true,
+    reconciliation: true,
+    documentVault: true,
     controlledTrading: false,
     billing: false,
   },

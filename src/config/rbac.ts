@@ -20,7 +20,7 @@ const RESOURCES: PermissionResource[] = [
   "tally",
   "documents",
   "tax",
-  "aiDesk",
+  "reconciliation",
   "workflow",
   "admin",
   "billing",
@@ -59,7 +59,7 @@ const VIEWABLE: PermissionResource[] = [
   "tally",
   "documents",
   "tax",
-  "aiDesk",
+  "reconciliation",
   "workflow",
 ];
 

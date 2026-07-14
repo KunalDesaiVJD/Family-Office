@@ -4,7 +4,6 @@ import { Icon } from "@/components/icons";
 import {
   NetWorthChart,
   AllocationPanel,
-  AiDailyBrief,
   BrokerOverview,
   ExceptionsPreview,
   TallyStatus,
@@ -81,7 +80,7 @@ export default function DashboardPage() {
       <PageHeader
         eyebrow="V J Desai Family · Command Centre"
         title="Consolidated Dashboard"
-        description="A single, bank-grade view of the family's wealth across brokers, funds, banks, Tally, insurance and operations. Figures shown are illustrative mock data."
+        description="A single, institution-grade view of the family's wealth across brokers, funds, Tally, insurance and operations. Figures shown are illustrative mock data."
         actions={
           <>
             <Button variant="outline" size="md" leftIcon={<Icon name="download" size={16} />}>
@@ -135,9 +134,6 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* AI daily brief */}
-      <AiDailyBrief />
-
       {/* Tier 2 — primary financial KPIs */}
       <section>
         <SectionHeading
@@ -165,19 +161,21 @@ export default function DashboardPage() {
           />
           <MetricCard
             emphasis
-            href="/bank-balances"
-            label="Bank Balance"
-            value={formatCompactINR(m.bankBalance)}
-            sublabel="5 accounts"
-            icon={<Icon name="bank" size={18} />}
+            tone="positive"
+            href={ROUTES.brokerHub}
+            label="Broker Cash"
+            value={formatCompactINR(m.brokerCash)}
+            sublabel="Angel funds / RMS"
+            icon={<Icon name="cash" size={18} />}
           />
           <MetricCard
             emphasis
-            tone="positive"
-            label="Broker Cash"
-            value={formatCompactINR(m.brokerCash)}
-            sublabel="Available margin"
-            icon={<Icon name="sparkle" size={18} />}
+            href={ROUTES.reconciliation}
+            label="Open Exceptions"
+            value={String(openReconExceptions)}
+            tone={openReconExceptions > 0 ? "warning" : "default"}
+            sublabel="Investment reconciliation"
+            icon={<Icon name="alert" size={18} />}
           />
           <MetricCard
             emphasis
@@ -253,10 +251,10 @@ export default function DashboardPage() {
         />
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
-            label="Open Exceptions"
+            label="Operational Exceptions"
             value={String(m.openExceptions)}
             tone="warning"
-            sublabel="Across brokers, banks & Tally"
+            sublabel="Across brokers, funds & Tally"
             delta={{ value: "2 high severity", direction: "down" }}
             icon={<Icon name="alert" size={18} />}
           />
@@ -328,11 +326,11 @@ export default function DashboardPage() {
           </Card>
 
           <Card
-            title="Reconciliation Exceptions"
+            title="Operational Exceptions"
             description="Highest-priority open items flagged for review."
             action={
-              <Button variant="ghost" size="sm" href="/ai-desk">
-                Open AI Desk
+              <Button variant="ghost" size="sm" href={ROUTES.reconciliation}>
+                Open Reconciliation Centre
               </Button>
             }
             padded={false}

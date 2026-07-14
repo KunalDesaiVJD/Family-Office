@@ -10,7 +10,7 @@ const TENANT_ID = "tnt_vjdesai";
 
 const RESOURCES = [
   "dashboard", "family", "entities", "pan", "broker", "demat", "mutualFunds",
-  "insurance", "tally", "documents", "tax", "aiDesk", "workflow", "admin",
+  "insurance", "tally", "documents", "tax", "reconciliation", "workflow", "admin",
   "billing", "audit", "trading",
 ];
 const ACTIONS = ["view", "create", "edit", "delete", "approve", "export"];
@@ -20,9 +20,9 @@ async function main() {
   await prisma.subscriptionPlan.createMany({
     skipDuplicates: true,
     data: [
-      { id: "plan_family", tier: "FAMILY", name: "Family", description: "For a single family managing consolidated wealth.", priceInr: 0, billingCycle: "ANNUAL", features: ["brokerHub", "mutualFunds", "tallySync", "insuranceVault", "aiDesk", "documentVault", "taxCentre", "workflow", "masterData"], maxUsers: 5, maxEntities: 10, maxConnectors: 6, auditRetentionMonths: 24 },
-      { id: "plan_office", tier: "OFFICE", name: "Family Office", description: "For multi-entity family offices with governance controls.", priceInr: 0, billingCycle: "ANNUAL", features: ["brokerHub", "mutualFunds", "tallySync", "insuranceVault", "aiDesk", "documentVault", "taxCentre", "workflow", "masterData", "billing", "ssoEnforcement"], maxUsers: 25, maxEntities: 50, maxConnectors: 12, auditRetentionMonths: 60 },
-      { id: "plan_enterprise", tier: "ENTERPRISE", name: "Enterprise", description: "For multi-family offices and institutions; custom pricing.", priceInr: 0, billingCycle: "ANNUAL", features: ["brokerHub", "mutualFunds", "tallySync", "insuranceVault", "aiDesk", "documentVault", "taxCentre", "workflow", "masterData", "billing", "ssoEnforcement", "controlledTrading", "liveConnectors"], maxUsers: -1, maxEntities: -1, maxConnectors: -1, auditRetentionMonths: 120 },
+      { id: "plan_family", tier: "FAMILY", name: "Family", description: "For a single family managing consolidated wealth.", priceInr: 0, billingCycle: "ANNUAL", features: ["brokerHub", "mutualFunds", "tallySync", "insuranceVault", "documentVault", "taxCentre", "reconciliation", "workflow", "masterData"], maxUsers: 5, maxEntities: 10, maxConnectors: 6, auditRetentionMonths: 24 },
+      { id: "plan_office", tier: "OFFICE", name: "Family Office", description: "For multi-entity family offices with governance controls.", priceInr: 0, billingCycle: "ANNUAL", features: ["brokerHub", "mutualFunds", "tallySync", "insuranceVault", "documentVault", "taxCentre", "reconciliation", "workflow", "masterData", "billing", "ssoEnforcement"], maxUsers: 25, maxEntities: 50, maxConnectors: 12, auditRetentionMonths: 60 },
+      { id: "plan_enterprise", tier: "ENTERPRISE", name: "Enterprise", description: "For multi-family offices and institutions; custom pricing.", priceInr: 0, billingCycle: "ANNUAL", features: ["brokerHub", "mutualFunds", "tallySync", "insuranceVault", "documentVault", "taxCentre", "reconciliation", "workflow", "masterData", "billing", "ssoEnforcement", "controlledTrading", "liveConnectors"], maxUsers: -1, maxEntities: -1, maxConnectors: -1, auditRetentionMonths: 120 },
     ],
   });
 
@@ -55,11 +55,11 @@ async function main() {
   };
   // Family Admin — all permissions.
   for (const p of permissions) rolePerms.push({ id: `rp_role_family_admin_${p.id}`, roleId: "role_family_admin", permissionId: p.id });
-  grant("role_trader", ["dashboard:view", "dashboard:export", "broker:view", "demat:view", "mutualFunds:view", "trading:view", "trading:create", "aiDesk:view"]);
+  grant("role_trader", ["dashboard:view", "dashboard:export", "broker:view", "demat:view", "mutualFunds:view", "trading:view", "trading:create", "reconciliation:view"]);
   grant("role_accountant", ["dashboard:view", "dashboard:export", "tally:view", "tally:create", "tally:edit", "documents:view", "documents:create", "documents:edit", "tax:view", "tax:edit", "tax:export"]);
-  grant("role_viewer", ["dashboard:view", "family:view", "entities:view", "pan:view", "broker:view", "demat:view", "mutualFunds:view", "insurance:view", "tally:view", "documents:view", "tax:view", "aiDesk:view", "workflow:view"]);
-  grant("role_reviewer", ["dashboard:view", "workflow:view", "workflow:approve", "audit:view", "audit:export", "aiDesk:view"]);
-  grant("role_developer_support", ["dashboard:view", "admin:view", "audit:view", "workflow:view", "aiDesk:view"]);
+  grant("role_viewer", ["dashboard:view", "family:view", "entities:view", "pan:view", "broker:view", "demat:view", "mutualFunds:view", "insurance:view", "tally:view", "documents:view", "tax:view", "reconciliation:view", "workflow:view"]);
+  grant("role_reviewer", ["dashboard:view", "workflow:view", "workflow:approve", "audit:view", "audit:export", "reconciliation:view"]);
+  grant("role_developer_support", ["dashboard:view", "admin:view", "audit:view", "workflow:view", "reconciliation:view"]);
   await prisma.rolePermission.createMany({ skipDuplicates: true, data: rolePerms });
 
   // --- Tenant -------------------------------------------------------------
@@ -188,7 +188,7 @@ async function main() {
       { id: "led_1002", tenantId: TENANT_ID, tallyCompanyId: "tly_pvt", entityId: "ent_pvt", date: new Date("2026-06-28"), ledgerName: "Professional Fees", voucherType: "PAYMENT", voucherNo: "PV-2210", narration: "Advisory retainer", debit: 340000, credit: 0, runningBalance: 484950000 },
       { id: "led_1003", tenantId: TENANT_ID, tallyCompanyId: "tly_pvt", entityId: "ent_pvt", date: new Date("2026-06-25"), ledgerName: "Consulting Revenue", voucherType: "SALES", voucherNo: "SV-8801", narration: "Invoice #8801", debit: 0, credit: 2800000, runningBalance: 485290000 },
       { id: "led_1004", tenantId: TENANT_ID, tallyCompanyId: "tly_llp", entityId: "ent_llp", date: new Date("2026-06-29"), ledgerName: "Advisory Income", voucherType: "SALES", voucherNo: "SV-5521", narration: "Quarterly advisory fee", debit: 0, credit: 1600000, runningBalance: 128600000 },
-      { id: "led_1005", tenantId: TENANT_ID, tallyCompanyId: "tly_llp", entityId: "ent_llp", date: new Date("2026-06-27"), ledgerName: "Bank Charges", voucherType: "PAYMENT", voucherNo: "PV-5310", narration: "Quarterly account charges", debit: 18500, credit: 0, runningBalance: 127000000 },
+      { id: "led_1005", tenantId: TENANT_ID, tallyCompanyId: "tly_llp", entityId: "ent_llp", date: new Date("2026-06-27"), ledgerName: "Brokerage & Statutory Charges", voucherType: "PAYMENT", voucherNo: "PV-5310", narration: "Quarterly broker charges", debit: 18500, credit: 0, runningBalance: 127000000 },
       { id: "led_1006", tenantId: TENANT_ID, tallyCompanyId: "tly_huf", entityId: "ent_huf", date: new Date("2026-06-26"), ledgerName: "Interest Received", voucherType: "RECEIPT", voucherNo: "RV-3120", narration: "FD interest credit", debit: 0, credit: 420000, runningBalance: 74300000 },
     ],
   });
@@ -236,7 +236,7 @@ async function main() {
       { id: "ff_broker", tenantId: TENANT_ID, key: "brokerHub", label: "Broker Hub", enabled: true, scope: "TENANT" },
       { id: "ff_mf", tenantId: TENANT_ID, key: "mutualFunds", label: "Mutual Funds", enabled: true, scope: "TENANT" },
       { id: "ff_tally", tenantId: TENANT_ID, key: "tallySync", label: "Tally Sync", enabled: true, scope: "TENANT" },
-      { id: "ff_ai", tenantId: TENANT_ID, key: "aiDesk", label: "AI Desk", enabled: true, scope: "TENANT" },
+      { id: "ff_recon", tenantId: TENANT_ID, key: "reconciliation", label: "Reconciliation Centre", enabled: true, scope: "TENANT" },
       { id: "ff_trading", tenantId: TENANT_ID, key: "controlledTrading", label: "Controlled Trading", enabled: false, scope: "TENANT" },
       { id: "ff_billing", tenantId: TENANT_ID, key: "billing", label: "Billing", enabled: false, scope: "TENANT" },
     ],
@@ -254,7 +254,7 @@ async function main() {
       { id: "exc_1001", tenantId: TENANT_ID, runId: "recon_1001", source: "ICICI Direct · Vijay Desai", description: "Contract note value mismatch vs demat holding", severity: "HIGH", amount: 245000, status: "OPEN", raisedAt: new Date("2026-07-12") },
       { id: "exc_1002", tenantId: TENANT_ID, runId: "recon_1001", source: "Angel One · Desai Family HUF", description: "Re-authentication required to resume sync", severity: "HIGH", amount: 0, status: "OPEN", raisedAt: new Date("2026-07-13") },
       { id: "exc_1003", tenantId: TENANT_ID, runId: "recon_1001", source: "Tally · V J Desai Ventures", description: "Dividend credit missing in books of account", severity: "MEDIUM", amount: 84000, status: "OPEN", raisedAt: new Date("2026-07-10") },
-      { id: "exc_1004", tenantId: TENANT_ID, runId: "recon_1001", source: "SMC Global · MF Folios", description: "SIP debit not reflected in bank statement", severity: "LOW", amount: 50000, status: "IN_REVIEW", raisedAt: new Date("2026-07-09") },
+      { id: "exc_1004", tenantId: TENANT_ID, runId: "recon_1001", source: "SMC Global · MF Folios", description: "SIP instalment not reflected in the folio statement", severity: "LOW", amount: 50000, status: "IN_REVIEW", raisedAt: new Date("2026-07-09") },
     ],
   });
 

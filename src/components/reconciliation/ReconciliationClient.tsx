@@ -59,10 +59,10 @@ const typeLabel: Record<ReconExceptionType, string> = {
   UNKNOWN: "Unknown",
 };
 
-const runMeta: Record<ReconciliationType, { label: string; icon: "funds" | "check" | "bank" | "documents" | "tally" }> = {
+const runMeta: Record<ReconciliationType, { label: string; icon: "funds" | "check" | "cash" | "documents" | "tally" }> = {
   holding: { label: "Holding Reconciliation", icon: "funds" },
   trade: { label: "Trade Reconciliation", icon: "check" },
-  funds: { label: "Funds Reconciliation", icon: "bank" },
+  funds: { label: "Broker Funds Reconciliation", icon: "cash" },
   contract_note: { label: "Contract Note (placeholder)", icon: "documents" },
   tally_broker_ledger: { label: "Tally ↔ Broker Ledger (placeholder)", icon: "tally" },
 };

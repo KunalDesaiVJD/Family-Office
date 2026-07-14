@@ -28,16 +28,17 @@ src/
     (app)/             Authenticated shell (Sidebar + Topbar) route group
       dashboard/       Executive command centre
       family/          Family Members
-      broker-hub/      Demat & broker connections
+      broker-hub/      Demat & broker connections (Angel One)
       mutual-funds/    Mutual fund folios
-      bank-balances/   Bank accounts
-      tally-sync/      Tally company reconciliation
       insurance-vault/ Insurance policies
-      tax-centre/      Tax reports & filings
+      tax-centre/      FIFO capital gains
+        imports/       Historical trade import
+      reconciliation/  Investment reconciliation centre
+      tally-sync/      Tally company reconciliation
       document-vault/  Secure documents
-      ai-desk/         AI exception summaries
       workflow-centre/ Approvals & audit
       admin-settings/  Tenant, roles, feature flags
+      masters/         Master-data registers
   components/
     layout/            AppShell, Sidebar, Topbar
     ui/                Card, Badge, Button, MetricCard, ModuleCard,
@@ -46,7 +47,13 @@ src/
   data/                Mock data (mockDashboard, mockFamily, ...)
   types/               Domain types (tenant, family, broker, portfolio, ...)
   lib/                 nav config + formatting helpers
+    portfolio/         Pure FIFO / capital-gain / reconciliation engine
 ```
+
+> **Out of scope for the current version:** there is no Bank Balance module (no
+> bank accounts, statements, Account Aggregator or bank reconciliation) and no
+> AI Desk module. Broker cash from Angel funds / RMS is in scope; bank balances
+> are not. Both may return as optional future modules.
 
 ## SaaS-Ready by Design
 

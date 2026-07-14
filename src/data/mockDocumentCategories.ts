@@ -3,79 +3,84 @@ import type { DocumentCategory } from "@/types/document";
 import { TENANT_ID } from "./tenant";
 import { vaultDocuments } from "./mockDocuments";
 
-const inUse: {
+// Visible document categories for the current version. A "Bank statement"
+// category is deliberately NOT offered — bank documents are out of scope.
+
+const categories: {
   code: DocumentCategory;
   label: string;
   description: string;
   retentionMonths: number;
 }[] = [
   {
-    code: "statement",
-    label: "Account Statements",
-    description: "Broker, bank and consolidated account statements.",
+    code: "angel_contract_note",
+    label: "Angel Contract Note",
+    description: "Trade confirmations and contract notes from Angel One.",
     retentionMonths: 96,
   },
   {
-    code: "contract_note",
-    label: "Contract Notes",
-    description: "Trade confirmations and contract notes from brokers.",
+    code: "angel_ledger",
+    label: "Angel Ledger",
+    description: "Broker ledger extracts used for funds reconciliation.",
     retentionMonths: 96,
   },
   {
-    code: "policy",
-    label: "Insurance Policies",
+    code: "angel_trade_report",
+    label: "Angel Trade Report",
+    description: "Trade book exports feeding the portfolio ledger.",
+    retentionMonths: 96,
+  },
+  {
+    code: "angel_holding_report",
+    label: "Angel Holding Report",
+    description: "Broker holding statements used for holding reconciliation.",
+    retentionMonths: 96,
+  },
+  {
+    code: "cas_statement",
+    label: "CAS Statement",
+    description: "Consolidated account statements across depositories.",
+    retentionMonths: 96,
+  },
+  {
+    code: "mutual_fund_statement",
+    label: "Mutual Fund Statement",
+    description: "Folio-level statements and SIP confirmations.",
+    retentionMonths: 96,
+  },
+  {
+    code: "insurance_policy",
+    label: "Insurance Policy",
     description: "Policy documents, schedules and renewal notices.",
     retentionMonths: 120,
   },
   {
-    code: "legal",
-    label: "Legal & Incorporation",
-    description: "MOA/AOA, deeds, agreements and legal filings.",
-    retentionMonths: 240,
-  },
-  {
-    code: "tax",
-    label: "Tax Records",
-    description: "Form 26AS, computations and filed returns.",
+    code: "tally_export",
+    label: "Tally Export",
+    description: "Ledger and voucher exports from Tally companies.",
     retentionMonths: 96,
   },
   {
-    code: "kyc",
-    label: "KYC & Identity",
-    description: "PAN, Aadhaar and KYC verification documents.",
-    retentionMonths: 120,
+    code: "tax_report",
+    label: "Tax Report",
+    description: "Form 26AS, capital-gain schedules and filed returns.",
+    retentionMonths: 96,
+  },
+  {
+    code: "other",
+    label: "Other",
+    description: "Deeds, agreements and any document outside the above.",
+    retentionMonths: 240,
   },
 ];
 
-export const documentCategories: DocumentCategoryRecord[] = [
-  ...inUse.map((c) => ({
-    id: `cat_${c.code}`,
-    tenantId: TENANT_ID,
-    code: c.code,
-    label: c.label,
-    description: c.description,
-    retentionMonths: c.retentionMonths,
-    documentCount: vaultDocuments.filter((d) => d.category === c.code).length,
-    status: "active" as const,
-  })),
-  {
-    id: "cat_board",
-    tenantId: TENANT_ID,
-    code: "board",
-    label: "Board & Governance",
-    description: "Board minutes, resolutions and governance records.",
-    retentionMonths: 240,
-    documentCount: 0,
-    status: "draft",
-  },
-  {
-    id: "cat_banking_mandate",
-    tenantId: TENANT_ID,
-    code: "banking_mandate",
-    label: "Banking Mandates",
-    description: "Signatory mandates and authorisation letters.",
-    retentionMonths: 120,
-    documentCount: 4,
-    status: "archived",
-  },
-];
+export const documentCategories: DocumentCategoryRecord[] = categories.map((c) => ({
+  id: `cat_${c.code}`,
+  tenantId: TENANT_ID,
+  code: c.code,
+  label: c.label,
+  description: c.description,
+  retentionMonths: c.retentionMonths,
+  documentCount: vaultDocuments.filter((d) => d.category === c.code).length,
+  status: "active" as const,
+}));
