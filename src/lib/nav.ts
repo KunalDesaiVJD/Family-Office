@@ -10,6 +10,8 @@ export interface NavItem {
 export interface NavSection {
   title: string;
   items: NavItem[];
+  /** Render as a collapsible group — collapsed unless a child route is active. */
+  collapsible?: boolean;
 }
 
 /** Primary navigation. Grouped for enterprise scannability. Paths come from
@@ -48,6 +50,7 @@ export const navSections: NavSection[] = [
   },
   {
     title: "Master Data",
+    collapsible: true,
     items: [
       { label: "Family Members", href: ROUTES.masters.familyMembers, icon: "family" },
       { label: "Legal Entities", href: ROUTES.masters.legalEntities, icon: "shield" },

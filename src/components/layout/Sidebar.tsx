@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navSections } from "@/lib/nav";
@@ -16,6 +17,9 @@ function isActive(pathname: string, href: string): boolean {
 
 export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  // Collapsible groups keep the panel short. Untouched groups follow the route:
+  // collapsed unless one of their pages is open.
+  const [toggled, setToggled] = useState<Record<string, boolean>>({});
 
   return (
     <>
@@ -48,42 +52,77 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-4">
-          {navSections.map((section) => (
-            <div key={section.title} className="mb-5">
-              <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-sidebar-text/40">
-                {section.title}
-              </p>
-              <ul className="space-y-0.5">
-                {section.items.map((item) => {
-                  const active = isActive(pathname, item.href);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={onClose}
-                        className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                          active
-                            ? "bg-white/10 font-medium text-white ring-1 ring-inset ring-white/10"
-                            : "text-sidebar-text/70 hover:bg-white/5 hover:text-white"
-                        }`}
-                      >
-                        <span
-                          className={
-                            active
-                              ? "text-brand-green"
-                              : "text-sidebar-text/50 group-hover:text-sidebar-text"
-                          }
-                        >
-                          <Icon name={item.icon} size={18} />
+          {navSections.map((section) => {
+            const hasActiveChild = section.items.some((i) => isActive(pathname, i.href));
+            const expanded = section.collapsible
+              ? (toggled[section.title] ?? hasActiveChild)
+              : true;
+            const sectionId = `nav-${section.title.replace(/\s+/g, "-").toLowerCase()}`;
+
+            return (
+              <div key={section.title} className="mb-5">
+                {section.collapsible ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setToggled((prev) => ({ ...prev, [section.title]: !expanded }))
+                    }
+                    aria-expanded={expanded}
+                    aria-controls={sectionId}
+                    className="flex w-full items-center justify-between rounded-lg px-3 pb-2 pt-1 text-[11px] font-semibold uppercase tracking-wider text-sidebar-text/40 transition-colors hover:text-sidebar-text/70"
+                  >
+                    <span className="flex items-center gap-2">
+                      {section.title}
+                      {!expanded && (
+                        <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-sidebar-text/60">
+                          {section.items.length}
                         </span>
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+                      )}
+                    </span>
+                    <span className={`transition-transform ${expanded ? "rotate-180" : ""}`}>
+                      <Icon name="chevronDown" size={14} />
+                    </span>
+                  </button>
+                ) : (
+                  <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-sidebar-text/40">
+                    {section.title}
+                  </p>
+                )}
+
+                {expanded && (
+                  <ul id={sectionId} className="space-y-0.5">
+                    {section.items.map((item) => {
+                      const active = isActive(pathname, item.href);
+                      return (
+                        <li key={item.href}>
+                          <Link
+                            href={item.href}
+                            onClick={onClose}
+                            className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                              active
+                                ? "bg-white/10 font-medium text-white ring-1 ring-inset ring-white/10"
+                                : "text-sidebar-text/70 hover:bg-white/5 hover:text-white"
+                            }`}
+                          >
+                            <span
+                              className={
+                                active
+                                  ? "text-brand-green"
+                                  : "text-sidebar-text/50 group-hover:text-sidebar-text"
+                              }
+                            >
+                              <Icon name={item.icon} size={18} />
+                            </span>
+                            {item.label}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </nav>
 
         {/* Tenant footer */}
