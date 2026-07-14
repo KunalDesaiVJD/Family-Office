@@ -17,11 +17,27 @@ import {
   formatINR,
   formatSignedCompactINR,
   formatPercent,
+  formatDate,
   formatDateTime,
 } from "@/lib/format";
 import { getConnectorHealth } from "@/lib/brokerStatus";
 import { ConnectorStatusBanner } from "@/components/broker/ConnectorStatusBanner";
 import { angelLastSyncedAt } from "@/data/mockAngel";
+import { ROUTES } from "@/config/routes";
+import { mockLedger } from "@/data/mockPortfolio";
+import { mockImportBatches } from "@/data/mockTrades";
+import { mockLastReconciliationAt, mockReconciliationExceptions } from "@/data/mockReconciliation";
+
+const importStatusLabel: Record<string, string> = {
+  uploaded: "Uploaded",
+  validating: "Validating",
+  validated: "Validated",
+  awaiting_review: "Awaiting Review",
+  imported: "Imported",
+  partially_imported: "Partially Imported",
+  rejected: "Rejected",
+  failed: "Failed",
+};
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -45,6 +61,20 @@ function SectionHeading({
 export default function DashboardPage() {
   const up = m.todaysMovement.amount >= 0;
   const health = getConnectorHealth();
+
+  // Investment-ledger figures computed from the internal FIFO engine.
+  const ledgerEquity = mockLedger.accountHoldings.reduce(
+    (sum, h) => sum + (h.marketValue ?? h.investedValue),
+    0,
+  );
+  const realisedGain = mockLedger.realisedGain.realisedGain;
+  const unrealisedGain = mockLedger.unrealisedGain.total;
+  const openReconExceptions = mockReconciliationExceptions.filter(
+    (e) => e.status !== "Resolved" && e.status !== "Ignored",
+  ).length;
+  const lastImport = [...mockImportBatches].sort((a, b) =>
+    b.uploadedAt.localeCompare(a.uploadedAt),
+  )[0];
 
   return (
     <div className="space-y-10">
@@ -156,6 +186,61 @@ export default function DashboardPage() {
             value={formatCompactINR(m.insuranceCover)}
             sublabel="7 active policies"
             icon={<Icon name="insurance" size={18} />}
+          />
+        </div>
+      </section>
+
+      {/* Investment ledger — internal FIFO engine */}
+      <section>
+        <SectionHeading
+          title="Investment Ledger"
+          description="Computed live from the internal FIFO engine over imported and mock trades."
+        />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <MetricCard
+            href={ROUTES.taxCentre}
+            label="Listed Equity (Ledger)"
+            value={formatCompactINR(ledgerEquity)}
+            sublabel="Internal holdings"
+            icon={<Icon name="broker" size={18} />}
+          />
+          <MetricCard
+            href={ROUTES.taxCentre}
+            label="Realised Gain"
+            value={formatCompactINR(realisedGain)}
+            tone={realisedGain >= 0 ? "positive" : "negative"}
+            sublabel="FIFO closed lots"
+            icon={<Icon name="funds" size={18} />}
+          />
+          <MetricCard
+            href={ROUTES.taxCentre}
+            label="Unrealised Gain"
+            value={formatCompactINR(unrealisedGain)}
+            tone={unrealisedGain >= 0 ? "positive" : "negative"}
+            sublabel={`${mockLedger.unrealisedGain.pricedCount} priced · ${mockLedger.unrealisedGain.pendingCount} pending`}
+            icon={<Icon name="sparkle" size={18} />}
+          />
+          <MetricCard
+            href={ROUTES.reconciliation}
+            label="Open Recon Exceptions"
+            value={String(openReconExceptions)}
+            tone={openReconExceptions > 0 ? "warning" : "default"}
+            sublabel="Investment reconciliation"
+            icon={<Icon name="alert" size={18} />}
+          />
+          <MetricCard
+            href={ROUTES.taxImports}
+            label="Last Trade Import"
+            value={importStatusLabel[lastImport.status] ?? lastImport.status}
+            sublabel={formatDate(lastImport.uploadedAt)}
+            icon={<Icon name="download" size={18} />}
+          />
+          <MetricCard
+            href={ROUTES.reconciliation}
+            label="Last Reconciliation"
+            value={formatDate(mockLastReconciliationAt)}
+            sublabel="Investment recon run"
+            icon={<Icon name="sync" size={18} />}
           />
         </div>
       </section>

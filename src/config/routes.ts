@@ -9,6 +9,8 @@ export const ROUTES = {
   insuranceVault: "/insurance-vault",
   tallySync: "/tally-sync",
   taxCentre: "/tax-centre",
+  taxImports: "/tax-centre/imports",
+  reconciliation: "/reconciliation",
   documentVault: "/document-vault",
   aiDesk: "/ai-desk",
   workflowCentre: "/workflow-centre",

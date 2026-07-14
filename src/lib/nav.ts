@@ -32,8 +32,10 @@ export const navSections: NavSection[] = [
   {
     title: "Operations",
     items: [
-      { label: "Tally Sync", href: ROUTES.tallySync, icon: "tally" },
+      { label: "Trade Import", href: ROUTES.taxImports, icon: "download" },
       { label: "Tax Centre", href: ROUTES.taxCentre, icon: "tax" },
+      { label: "Reconciliation Centre", href: ROUTES.reconciliation, icon: "sync" },
+      { label: "Tally Sync", href: ROUTES.tallySync, icon: "tally" },
       { label: "Document Vault", href: ROUTES.documentVault, icon: "documents" },
     ],
   },
