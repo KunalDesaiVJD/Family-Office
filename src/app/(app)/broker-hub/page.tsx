@@ -4,13 +4,17 @@ import { Icon } from "@/components/icons";
 import { BrokerHubTabs } from "@/components/broker/BrokerHubTabs";
 import { ConnectorStatusBanner } from "@/components/broker/ConnectorStatusBanner";
 import { getConnectorHealth } from "@/lib/brokerStatus";
-import { brokerAccounts, holdings } from "@/data/mockBrokerAccounts";
+import { angelFunds, angelLastSyncedAt } from "@/data/mockAngel";
 import {
-  angelProfile,
-  angelFunds,
-  angelSyncLogs,
-  angelLastSyncedAt,
-} from "@/data/mockAngel";
+  angelAccounts,
+  angelHoldings,
+  angelOrders,
+  angelTrades,
+  angelPositions,
+  angelLedger,
+  angelSyncRun,
+  angelAccountSyncLogs,
+} from "@/data/mockAngelAccounts";
 
 export const metadata: Metadata = { title: "Broker Hub" };
 
@@ -22,7 +26,7 @@ export default function BrokerHubPage() {
       <PageHeader
         eyebrow="V J Desai Family · Wealth"
         title="Broker Hub"
-        description="Consolidated demat holdings, funds and connector health across the family's Angel One and other broker accounts. Read-only — trading is disabled."
+        description="Multi-account Angel One view — per-account holdings, funds, orders, trades, positions and ledger for every family member. Read-only — trading is disabled."
         actions={
           <Button
             variant="outline"
@@ -38,11 +42,15 @@ export default function BrokerHubPage() {
 
       <BrokerHubTabs
         health={health}
-        accounts={brokerAccounts}
-        holdings={holdings}
-        profile={angelProfile}
+        accounts={angelAccounts}
+        holdings={angelHoldings}
+        orders={angelOrders}
+        trades={angelTrades}
+        positions={angelPositions}
+        ledger={angelLedger}
+        syncRun={angelSyncRun}
+        accountSyncLogs={angelAccountSyncLogs}
         funds={angelFunds}
-        syncLogs={angelSyncLogs}
         lastSyncedAt={angelLastSyncedAt}
       />
     </div>

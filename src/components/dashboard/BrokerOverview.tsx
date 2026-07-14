@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui";
 import { brokerAccounts } from "@/data/mockBrokerAccounts";
 import { connectionTone, connectionLabel } from "@/lib/status";
-import { formatCompactINR } from "@/lib/format";
+import { formatCompactINR, maskClientCode } from "@/lib/format";
 
 /** Compact broker account overview with connection health. */
 export function BrokerOverview() {
@@ -41,7 +41,7 @@ export function BrokerOverview() {
                 {a.ownerName}
               </p>
               <p className="text-xs text-muted">
-                {a.broker} · {a.clientCode}
+                {a.broker} · {maskClientCode(a.clientCode)}
               </p>
             </div>
             <div className="flex items-center gap-3">

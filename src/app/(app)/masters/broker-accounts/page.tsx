@@ -7,6 +7,7 @@ import {
   type MasterBadgeSpec,
 } from "@/components/master/MasterDataManager";
 import { brokerAccounts } from "@/data/mockBrokerAccounts";
+import { maskClientCode } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Broker Accounts" };
 
@@ -23,7 +24,7 @@ const rows = brokerAccounts.map((a) => ({
   tenantId: a.tenantId,
   ownerName: a.ownerName,
   broker: a.broker,
-  clientCode: a.clientCode,
+  clientCode: maskClientCode(a.clientCode),
   depository: a.demat.depository,
   equityValue: a.equityValue,
   cashBalance: a.cashBalance,
@@ -83,7 +84,7 @@ export default function BrokerAccountsMasterPage() {
       rows={rows}
       columns={columns}
       filters={filters}
-      searchKeys={["ownerName", "clientCode", "broker"]}
+      searchKeys={["ownerName", "broker"]}
       titleKey="ownerName"
       subtitleKey="broker"
       detailFields={detailFields}

@@ -88,3 +88,10 @@ export function formatDateTime(iso: string): string {
     timeZone: TIME_ZONE,
   });
 }
+
+/** Mask a broker client code for display, keeping the first 2 and last 3 chars. */
+export function maskClientCode(code: string): string {
+  if (!code || code.length <= 5) return code;
+  const dots = "•".repeat(Math.max(3, code.length - 5));
+  return `${code.slice(0, 2)}${dots}${code.slice(-3)}`;
+}
